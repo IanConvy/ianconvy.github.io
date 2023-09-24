@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-10-20">
+
+<title>Ian Convy’s Stuff - Bayesian Inference for Quantum Error Correction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/quarto-contrib/bootstrap-icons-1.9.1/all.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Ian Convy’s Stuff</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../projects/phd/phd.html" rel="" target="" aria-current="page">
+ <span class="menu-text">PhD Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/tetris/tetris.html" rel="" target="">
+ <span class="menu-text">Tetris</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/other/other.html" rel="" target="">
+ <span class="menu-text">Other</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/IanConvy" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/ian-convy" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../projects/phd/phd.html">PhD Research</a></li><li class="breadcrumb-item"><a href="../../../projects/phd/bayesian/bayesian.html">Bayesian Error Correction</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/phd/phd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PhD Research</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/decomp/deomp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Interaction Decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/bayesian/bayesian.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Bayesian Error Correction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/mi-scaling/mi-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Correlation Scaling in Images</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-sql/tetris-sql.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PostgreTETRIS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris-vba/tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris in VBA</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-vba/post-thoughts-tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Post: Some Thoughts on VBA Tetris</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-spark/tetris-spark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solving Tetris with Spark</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-emulator/tetris-emulator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NES Emulator</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/other/other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Other</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/neoquest/neoquest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Decoding NeoQuest II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/wavelet/wavelet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wavelet Reconstructor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/speedrunning/speedrunning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speedrunning Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#a-brief-introduction-to-quantum-error-correction" id="toc-a-brief-introduction-to-quantum-error-correction" class="nav-link" data-scroll-target="#a-brief-introduction-to-quantum-error-correction">A Brief Introduction to Quantum Error Correction</a></li>
+  <li><a href="#the-measurement-data" id="toc-the-measurement-data" class="nav-link" data-scroll-target="#the-measurement-data">The Measurement Data</a></li>
+  <li><a href="#the-bayesian-filter" id="toc-the-bayesian-filter" class="nav-link" data-scroll-target="#the-bayesian-filter">The Bayesian Filter</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Bayesian Inference for Quantum Error Correction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 20, 2022</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><i class="bi-github " style="" role="img" aria-hidden="true"></i> <a href="https://github.com/IanConvy/bayesian-error-correction">GitHub Repository</a></p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>These two research projects used Bayesian statistical methods to perform error correction for quantum computers, as described in <a href="https://iopscience.iop.org/article/10.1088/2632-2153/aca271/meta">“A Logarithmic Bayesian Approach to Quantum Error Detection”</a>:</p>
+<blockquote class="blockquote">
+<p>We consider the problem of continuous quantum error correction from a Bayesian perspective, proposing a pair of digital filters using logarithmic probabilities that are able to achieve near-optimal performance on a three-qubit bit-flip code, while still being reasonable to implement on low-latency hardware. These practical filters are approximations of an optimal filter that we derive explicitly for finite time steps, in contrast with previous work that has relied on stochastic differential equations such as the Wonham filter. By utilizing logarithmic probabilities, we are able to eliminate the need for explicit normalization and can reduce the Gaussian noise distribution to a simple quadratic expression. The state transitions induced by the bit-flip errors are modeled using a Markov chain, which for log-probabilties must be evaluated using a LogSumExp function. We develop the two versions of our filter by constraining this LogSumExp to have either one or two inputs, which favors either simplicity or accuracy, respectively. Using simulated data, we demonstrate that the single-term and two-term filters are able to significantly outperform both a double threshold scheme and a linearized version of the Wonham filter in tests of error detection under a wide variety of error rates and time steps.</p>
+</blockquote>
+<p>and <a href="https://iopscience.iop.org/article/10.1088/2632-2153/ac44a9/meta">“Machine Learning for Continuous Quantum Error Correction on Superconducting Qubits”</a>:</p>
+<blockquote class="blockquote">
+<p>Continuous quantum error correction has been found to have certain advantages over discrete quantum error correction, such as a reduction in hardware resources and the elimination of error mechanisms introduced by having entangling gates and ancilla qubits. We propose a machine learning algorithm for continuous quantum error correction that is based on the use of a recurrent neural network to identify bit-flip errors from continuous noisy syndrome measurements. The algorithm is designed to operate on measurement signals deviating from the ideal behavior in which the mean value corresponds to a code syndrome value and the measurement has white noise. We analyze continuous measurements taken from a superconducting architecture using three transmon qubits to identify three significant practical examples of non-ideal behavior, namely auto-correlation at temporal short lags, transient syndrome dynamics after each bit-flip, and drift in the steady-state syndrome values over the course of many experiments. Based on these real-world imperfections, we generate synthetic measurement signals from which to train the recurrent neural network, and then test its proficiency when implementing active error correction, comparing this with a traditional double threshold scheme and a discrete Bayesian classifier. The results show that our machine learning protocol is able to outperform the double threshold protocol across all tests, achieving a final state fidelity comparable to the discrete Bayesian classifier.</p>
+</blockquote>
+<p>whose abstracts are given above.</p>
+<p>The <code>examples.ipynb</code> notebook in the GitHub repo (linked above) provides a description of the Bayesian error correction algorithm, along with sample code that runs a toy example. The full model code can be found within the <code>log_bayes.py</code> and <code>real_data.py</code> modules in the src directory.</p>
+<p>A non-interactive version of the Jupyter notebook is reproduced below.</p>
+</section>
+<section id="a-brief-introduction-to-quantum-error-correction" class="level2">
+<h2 class="anchored" data-anchor-id="a-brief-introduction-to-quantum-error-correction">A Brief Introduction to Quantum Error Correction</h2>
+<p>When using a quantum computer, we are interested in the behavior of objects known as <em>qubits</em>. A qubit is similar to the classical bit used in standard computers, except that it can take on states that are in-between the usual 0 and 1 binary values. These intermediate configurations are known as <em>superpositions</em>, and are what allow quantum computers to carry out certain tasks much more efficiently than standard computers.</p>
+<p>One of the disadvantages of quantum computers is that they are very susceptible to errors. These errors perturb the state of the qubits, and will ultimately corrupt the output of the algorithm if not corrected. Fortunately, it is possible to monitor the state of the qubits in real time during a calculation and detect when an error occurs. An operation can then be performed on the affected qubit to undo the error and bring the qubit back into its correct state.</p>
+<p>The qubits are monitored by performing quantum measurements, which will generate time-series data that can be analyzed to check for errors. The form of these measurements will change depending on the number of qubits and the type of errors that are expected, but for simplicity we will focus on a three-qubit system that is perturbed by bit-flip errors. Under normal operations, each qubit should be in the same state as the other qubits, but a bit-flip error on one of the qubits will break this symmetry. To determine which qubit has been flipped, we can perform a <em>parity measurement</em> on two different pairs of qubits, which gives a value of -1 if the two qubits are in the same state and +1 if they are in different states. If at least one measurement returns a value of +1, then we know that an error has occurred and can figure out which qubit was flipped.</p>
+<p>The process described above is very straightforward if we can know the exact values of the parity measurements, but unfortunately this is often not possible. Instead, we end up with a signal whose mean will be centered on +1 or -1, but which will also have a large amount of Gaussian noise on top of it. To extract out the parity measurement, we must apply some kind of filtering algorithm to the signal, which is where Bayesian inference can be very useful.</p>
+</section>
+<section id="the-measurement-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-measurement-data">The Measurement Data</h2>
+<p>Before describing the Bayesian model, we will first take a closer look at the measurement data itself. Since we are interested in training an algorithm to detect bit-flip errors, we will want to look at measurements from qubits that have been deliberately flipped in a consistent and controlled manner. The following code loads a set of sample measurement data and plots one of the time series:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.load(<span class="st">"src/data/measurements.npz"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>measurements <span class="op">=</span> data[<span class="st">"measurements"</span>][<span class="dv">0</span>, <span class="dv">1</span>, :, <span class="dv">0</span>] <span class="co"># Index 1 marks the qubit state, Index 2 marks the flipped qubit</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The data has </span><span class="sc">{</span>measurements<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> measurements in the time series for each of the two qubit pairs."</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>plt.plot(data[<span class="st">"times"</span>], measurements.T)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r"Time ($\mu$s)"</span>, fontsize <span class="op">=</span> <span class="dv">16</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Measurement"</span>, fontsize <span class="op">=</span> <span class="dv">16</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>plt.gcf().set_size_inches(<span class="dv">10</span>, <span class="dv">7</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>The data has 192 measurements in the time series for each of the two qubit pairs.
+   </code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/phd/bayesian/measurements.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Code output showing noisy measurements.</figcaption>
+</figure>
+</div>
+<p>Although it is difficult to tell from this plot, both of the parity measurements (the parity of the first and second qubit is shown in blue, while the parity of the second and third qubits is shown in orange) are centered on -1 until the 3 <span class="math inline">\(\mu\)</span>s mark. Then an error occurs on the first qubit, which causes the mean of the blue line to shift down to +1. It is clear from the plot that there is a significant amount of noise in the measurements, with noticeable autocorrelation between neighboring values.</p>
+<p>Given the large variance in the measurements, the changes induced by the bit flips are easiest to see by plotting the measurement means.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/phd/bayesian/means.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Syndrome dynamics during bit flips.</figcaption>
+</figure>
+</div>
+<p>Each row of plots corresponds to a different starting configuration of the qubits, with each qubit either in the 0 or 1 state. The different columns correspond to different bit flips, with the first column containing no bit flips and columns 2, 3, and 4 corresponding to flips of qubits 1, 2, and 3 respectively. The figure as a whole shows several interesting behaviors, such as a clear oscillation pattern that occurs after certain flips. We can also see that the means do not exactly align at +1 and -1, but instead drift somewhat over time. These imperfections are something that will need to be dealt with by the filtering algorithm.</p>
+</section>
+<section id="the-bayesian-filter" class="level2">
+<h2 class="anchored" data-anchor-id="the-bayesian-filter">The Bayesian Filter</h2>
+<p>Our goal in quantum error correction is to determine what error, if any, has perturbed the state of the qubits in our quantum computer. Given the measurement signals plotted in the previous section, the detection of an error is equivalent to detecting when the mean of the measurement signal switches from -1 to +1. Assuming that the errors are uncorrelated, we can describe the system of qubits and measurement signals using a hidden Markov model. The qubit states represent a hidden Markovian variable, with a probability of transition depending only on the current state. Since the measurement signal follows a Gaussian distribution whose mean is determined by the qubit states, we can use observations of the signal to make inferences about the hidden Markov variable. The following code shows the basic features of the hidden Markov model:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Bayesian():</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This class represenrs the Bayesian classifier designed to handle</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the autocorrelations present in imperfect measurement data.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, depth):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># The depth attribute determines how many prior syndrome measurements to</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># condition on when calculating the Gaussian likelihood of a new syndrome</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># measurement. For depth &gt; 0, this allows the model to leverage any</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># autocorrelation that may be present in the data.</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.depth <span class="op">=</span> depth</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This is simply a list of the other attributes that will be used.</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.transition_matrix <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.gauss_means <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.gauss_precs <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prior <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prev_synd <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> classify(<span class="va">self</span>, measurements):</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This method returns the posterior probability, with shape (num_runs, 8),</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># of each label given a batch of measurments with shape (num_runs, 2). The</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># internal state of the classifier is also updated appropriately, with the</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># prior being updated to the posterior and the previous syndromes being</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="co"># updated to include the new measurements.</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        m_1_batch <span class="op">=</span> torch.cat(</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>            [<span class="va">self</span>.prev_synd[:, <span class="dv">0</span>:<span class="dv">1</span>], measurements[<span class="va">None</span>, <span class="dv">0</span>:<span class="dv">1</span>]], dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        m_2_batch <span class="op">=</span> torch.cat(</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>            [<span class="va">self</span>.prev_synd[:, <span class="dv">1</span>:<span class="dv">2</span>], measurements[<span class="va">None</span>, <span class="dv">1</span>:<span class="dv">2</span>]], dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        likelihood <span class="op">=</span> <span class="va">self</span>.get_gaussian_outputs(m_1_batch, m_2_batch)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        unnorm_probs <span class="op">=</span> torch.einsum(</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            <span class="st">"al,lr-&gt;ar"</span>, <span class="va">self</span>.prior.<span class="bu">float</span>(), <span class="va">self</span>.transition_matrix.<span class="bu">float</span>()) <span class="op">*</span> likelihood</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>        posteriors <span class="op">=</span> unnorm_probs <span class="op">/</span> <span class="op">\</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>            torch.<span class="bu">sum</span>(unnorm_probs, dim<span class="op">=</span><span class="dv">1</span>, keepdim<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prior <span class="op">=</span> posteriors</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.depth:</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.prev_synd <span class="op">=</span> torch.cat(</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>                [<span class="va">self</span>.prev_synd[<span class="dv">1</span>:, :], measurements[<span class="va">None</span>, :]])</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> posteriors[<span class="dv">0</span>]</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_gaussian_outputs(<span class="va">self</span>, m_1_batch, m_2_batch):</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This method calculates the Gaussian likelihoods for the syndrome pair in</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>        <span class="co"># the most recent step, conditioned on a number of prior measurements determined</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        <span class="co"># by the depth attribute. This means that the m_1_batch and m_2_batch must both</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>        <span class="co"># have shapes of (num_runs, depth + 1).</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>        (num_runs, num_steps) <span class="op">=</span> m_1_batch.shape</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        joint_batch <span class="op">=</span> torch.cat([m_1_batch, m_2_batch], dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        marg_batch <span class="op">=</span> torch.cat([m_1_batch[:, :<span class="op">-</span><span class="dv">1</span>], m_2_batch[:, :<span class="op">-</span><span class="dv">1</span>]], dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>        joint_centered <span class="op">=</span> joint_batch.reshape(</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>            [num_runs, <span class="dv">1</span>, <span class="dv">2</span><span class="op">*</span>(<span class="va">self</span>.depth <span class="op">+</span> <span class="dv">1</span>)]) <span class="op">-</span> <span class="va">self</span>.joint_means.reshape([<span class="dv">1</span>, <span class="dv">8</span>, <span class="dv">2</span><span class="op">*</span>(<span class="va">self</span>.depth <span class="op">+</span> <span class="dv">1</span>)])</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>        joint_expon <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>torch.einsum(<span class="st">"ali,lij,alj-&gt;al"</span>, joint_centered.<span class="bu">float</span>(</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>        ), <span class="va">self</span>.joint_precs.<span class="bu">float</span>(), joint_centered.<span class="bu">float</span>())</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>        joint_output <span class="op">=</span> joint_expon <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span>torch.slogdet(<span class="va">self</span>.joint_precs)[<span class="dv">1</span>]</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.depth <span class="op">&gt;</span> <span class="dv">0</span>:  <span class="co"># The marginal distribution only exists if depth &gt; 0</span></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>            marg_batch <span class="op">=</span> torch.cat(</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>                [m_1_batch[:, :<span class="op">-</span><span class="dv">1</span>], m_2_batch[:, :<span class="op">-</span><span class="dv">1</span>]], dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>            marg_centered <span class="op">=</span> marg_batch.reshape(</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>                [num_runs, <span class="dv">1</span>, <span class="dv">2</span><span class="op">*</span><span class="va">self</span>.depth]) <span class="op">-</span> <span class="va">self</span>.marg_means.reshape([<span class="dv">1</span>, <span class="dv">8</span>, <span class="dv">2</span><span class="op">*</span><span class="va">self</span>.depth])</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>            marg_expon <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>torch.einsum(<span class="st">"ali,lij,alj-&gt;al"</span>, marg_centered.<span class="bu">float</span>(</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>            ), <span class="va">self</span>.marg_precs.<span class="bu">float</span>(), marg_centered.<span class="bu">float</span>())</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>            marg_output <span class="op">=</span> marg_expon <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span>torch.slogdet(<span class="va">self</span>.marg_precs)[<span class="dv">1</span>]</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>            log_output <span class="op">=</span> joint_output <span class="op">-</span> marg_output</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>            log_output <span class="op">=</span> joint_output</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> torch.exp(log_output)  <span class="co"># Only exponentiate at the end</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The main method of interest here is <code>classify</code>, which takes as input two parity measurements (one for each pair of qubits) and returns a set of posterior probabilities for each qubit configuration (i.e.&nbsp;the state of the hidden Markov variable). The model starts by transforming its prior distribution, which are the probabilities generated by the previous call to <code>classify</code> (or the initial state of the qubits) using the bit-flip transition matrix, and then updates them based on the measurement data. Since the measurements are Gaussian distributed, we can easily compute the likelihood associated with each qubit state by setting the means to +1 or -1, which is done in the <code>get_gaussian_outputs</code> method. In order to take into account any autocorrelation between sequential samples, we can store the previous measurement values and use them as input to the Gaussian likelihood.</p>
+<p>In the code block above, the transition matrix and Gaussian parameter are left uninitialized. To get values for them, we can fit to a set of measurement data like that shown in the previous section. For each qubit state, the means of the measurement values can be computed and stored in <code>self.gauss_means</code>, while variance and covariance values are stored in <code>self.gauss_precs</code>. The transition matrix cannot be fit using data with artificial errors, but its elements can be computed by assuming some plausible error rate for the quantum computer based on its hardware.</p>
+<p>To evaluate a trained model, we can simulate measurement data and then test how well the model is able to predict the state of the (simulated) qubits. An example test is shown in the following code:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src <span class="im">import</span> tools, real_data</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Generating data..."</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>(train_data, train_labels) <span class="op">=</span> tools.Real_Simulated(error_rate_sec <span class="op">=</span> <span class="fl">0.01</span><span class="op">*</span><span class="fl">1e6</span>).generate_data(<span class="dv">30000</span>, <span class="dv">60</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>(test_data, test_labels) <span class="op">=</span> tools.Real_Simulated(error_rate_sec <span class="op">=</span> <span class="fl">0.01</span><span class="op">*</span><span class="fl">1e6</span>).generate_data(<span class="dv">30000</span>, <span class="dv">60</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> real_data.Bayesian(<span class="dv">0</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>model.train(train_data, train_labels)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>m_1 <span class="op">=</span> test_data[:, :, <span class="dv">0</span>]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>m_2 <span class="op">=</span> test_data[:, :, <span class="dv">1</span>]</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>(num_runs, num_steps) <span class="op">=</span> m_1.shape</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> torch.zeros([num_runs, <span class="dv">0</span>])</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>model.prior <span class="op">=</span> torch.zeros([num_runs, <span class="dv">8</span>])</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>model.prior[torch.arange(num_runs), test_labels[:, <span class="dv">0</span>].<span class="bu">type</span>(torch.<span class="bu">long</span>)] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>num_correct <span class="op">=</span> torch.zeros([num_runs])</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Testing..."</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(num_steps):</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># For each step, the new prior is calculated by contracting the previous</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># prior with the transition matrix, then scaling by the measurement </span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># probabilities.</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    m_1_slice <span class="op">=</span> m_1[:, step:step <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    m_2_slice <span class="op">=</span> m_2[:, step:step <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    sample_probs <span class="op">=</span> model.get_gaussian_outputs(m_1_slice, m_2_slice)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    unnorm_probs <span class="op">=</span> torch.einsum(<span class="st">"al,lr-&gt;ar"</span>, model.prior.<span class="bu">float</span>(), model.transition_matrix.<span class="bu">float</span>()) <span class="op">*</span> sample_probs</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    model.prior <span class="op">=</span> unnorm_probs <span class="op">/</span> torch.<span class="bu">sum</span>(unnorm_probs, dim <span class="op">=</span> <span class="dv">1</span>, keepdim <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> torch.argmax(model.prior, dim <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    true_states <span class="op">=</span> test_labels[:, step]</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    fidelity <span class="op">=</span> (predictions <span class="op">==</span> true_states)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    num_correct <span class="op">=</span> num_correct <span class="op">+</span> fidelity</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    outputs <span class="op">=</span> torch.cat([outputs, predictions[:, <span class="va">None</span>]], dim <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\r</span><span class="st">Step </span><span class="sc">{}</span><span class="st">/</span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(step, num_steps), end <span class="op">=</span> <span class="st">""</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>acc <span class="op">=</span> num_correct <span class="op">*</span> <span class="dv">100</span> <span class="op">/</span> num_steps</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Acc: </span><span class="sc">{:.2f}</span><span class="st">%"</span>.<span class="bu">format</span>(torch.mean(acc)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The final accuracy value reports how often the model correctly predicted the state of the system. Due to the irreducible noise in the measurement value, an accuracy of 100% will be virtually impossible for any large sample size. Indeed, the performance of this model is effectively optimal on the simulated data, since we use a Gaussian distribution to sample the measurement values and assume that the qubits states follow Markovian dynamics.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

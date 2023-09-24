@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-05-09">
+
+<title>Ian Convy’s Stuff - PostgreTETRIS: Tetris in SQL</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/quarto-contrib/bootstrap-icons-1.9.1/all.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Ian Convy’s Stuff</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../projects/phd/phd.html" rel="" target="" aria-current="page">
+ <span class="menu-text">PhD Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/tetris/tetris.html" rel="" target="">
+ <span class="menu-text">Tetris</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/other/other.html" rel="" target="">
+ <span class="menu-text">Other</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/IanConvy" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/ian-convy" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../projects/tetris/tetris.html">Tetris</a></li><li class="breadcrumb-item"><a href="../../../projects/tetris/tetris-sql/tetris-sql.html">PostgreTETRIS</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/phd/phd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PhD Research</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/decomp/deomp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Interaction Decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/bayesian/bayesian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayesian Error Correction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/mi-scaling/mi-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Correlation Scaling in Images</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-sql/tetris-sql.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">PostgreTETRIS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris-vba/tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris in VBA</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-vba/post-thoughts-tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Post: Some Thoughts on VBA Tetris</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-spark/tetris-spark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solving Tetris with Spark</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-emulator/tetris-emulator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NES Emulator</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/other/other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Other</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/neoquest/neoquest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Decoding NeoQuest II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/wavelet/wavelet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wavelet Reconstructor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/speedrunning/speedrunning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speedrunning Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#table-structure" id="toc-table-structure" class="nav-link" data-scroll-target="#table-structure">Table structure</a></li>
+  <li><a href="#starting-a-game" id="toc-starting-a-game" class="nav-link" data-scroll-target="#starting-a-game">Starting a game</a></li>
+  <li><a href="#placing-a-piece" id="toc-placing-a-piece" class="nav-link" data-scroll-target="#placing-a-piece">Placing a piece</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">PostgreTETRIS: Tetris in SQL</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 9, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><i class="bi-github " style="" role="img" aria-hidden="true"></i> <a href="https://github.com/IanConvy/tetris-in-postgresql">GitHub Repository</a></p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This project implements a form of Tetris that can be played within a PostgreSQL database, using code written in the PL/pgSQL scripting language. The object definitions are all contained in the <code>tetris.sql</code> file, which can be executed by running <code>\i tetris.sql</code> in psql after connecting to an empty database.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/tetris/tetris-sql/preview.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Tetris played in psql, with revolutionary graphics. The diagrams at the bottom show possible orientations for the next piece.</figcaption>
+</figure>
+</div>
+<p>Once the script has been run, the <code>reset</code> procedure must be called in order to prepare the components and print the blank playfield. To place a piece, you insert a (pos, orient) tuple into the <code>moves</code> table using <code>CALL place(pos, orient)</code>, where “pos” is an integer from 1 to 10 that marks the leftmost column to place the piece, and “orient” is an integer that determines how the piece is rotated.</p>
+<p>The following sections provide an exhaustive description of the tables, views, functions, and procedures used by the application.</p>
+</section>
+<section id="table-structure" class="level2">
+<h2 class="anchored" data-anchor-id="table-structure">Table structure</h2>
+<p>The data needed for the Tetris application to function is stored in five tables: <code>moves</code>, <code>lines</code>, <code>piece_log</code>, <code>board</code>, and <code>pieces</code>. The table creation statements for the first four tables are given below:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>CREATE TABLE IF NOT EXISTS moves (</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    pos INT,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    orient INT</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>CREATE TABLE IF NOT EXISTS lines (</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    num_lines INT,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    num_cleared INT</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>CREATE TABLE IF NOT EXISTS piece_log (piece_name)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    AS SELECT <span class="st">'blank'</span><span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>CREATE TABLE IF NOT EXISTS board (</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    height INT,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    width INT,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    state BOOL DEFAULT <span class="st">'false'</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>moves</code> table is the only one that the player interacts with directly, and has a column for the position of the Tetris piece (measured from its leftmost block) and its orientation. These are the two pieces of information that the player must provide to make a move, a process which is described in more detail later. The <code>lines</code> table is used to keep track of the number (column <code>num_cleared</code>) and type (column <code>num_lines</code>) of each line clear that occurs, and serves as the effective scoreboard of the game. The <code>piece_log</code> is used to keep track of the current piece, and only ever contains a single value. Finally, the highly dynamic <code>board</code> table keeps track of where pieces are placed, and lies at the heart of the application. Each row in the table corresponds to a specific tile in the 20x10 playfield, with the <code>height</code> and <code>width</code> columns defining its exact position. The <code>state</code> boolean column stores whether the tile is currently occupied by a piece block, and thus plays a key role in determining where the player can drop pieces and which lines need to be cleared. Upon calling the <code>reset</code> procedure (described later), the <code>board</code> table is populated using the following INSERT statement:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>INSERT INTO board (height, width) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    SELECT <span class="op">*</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    FROM generate_series(<span class="dv">1</span>, <span class="dv">20</span>) t1 </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        CROSS JOIN generate_series(<span class="dv">1</span>, <span class="dv">10</span>) t2<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>which generates all 200 rows with a default state of <code>false</code>, indicating that the associated tile is unoccupied. The placement of a piece is performed by simply setting the state of the affected rows to <code>true</code>.</p>
+<p>The last table to discuss is the <code>pieces</code> table, which is unique in that it is not altered in any manner after creation. This is because it holds immutable information about the seven Tetris pieces, laid down when Tetris was first invented in the eighties. The code to create the <code>pieces</code> table and define its contents is given below:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>CREATE TABLE IF NOT EXISTS pieces (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    name, orient, b1, b2, b3, b4, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        prev1, prev2, prev3, prev4)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>AS VALUES</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'sq'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X'</span>, <span class="st">'X X'</span>, <span class="st">'   '</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'i'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], ARRAY [<span class="dv">0</span>,<span class="dv">3</span>], </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X X X'</span>, <span class="st">'       '</span>, <span class="st">'       '</span>, <span class="st">'       '</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'i'</span>, <span class="dv">2</span>, ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">2</span>,<span class="dv">0</span>], </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X'</span>, <span class="st">'X'</span>, <span class="st">'X'</span>, <span class="st">'X'</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'t'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X X'</span>, <span class="st">'  X  '</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'t'</span>, <span class="dv">2</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>         <span class="st">'  X'</span>, <span class="st">'X X'</span>, <span class="st">'  X'</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'t'</span>, <span class="dv">3</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>         <span class="st">'  X  '</span>, <span class="st">'X X X'</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'t'</span>, <span class="dv">4</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X  '</span>, <span class="st">'X X'</span>, <span class="st">'X  '</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'zr'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>         <span class="st">'  X X'</span>, <span class="st">'X X  '</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'zr'</span>, <span class="dv">2</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X  '</span>, <span class="st">'X X'</span>, <span class="st">'  X'</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'zl'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">2</span>], </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X  '</span>, <span class="st">'  X X'</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'zl'</span>, <span class="dv">2</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>         <span class="st">'  X'</span>, <span class="st">'X X'</span>, <span class="st">'X  '</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'lr'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], </span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X X'</span>, <span class="st">'X    '</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'lr'</span>, <span class="dv">2</span>, ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X'</span>, <span class="st">'  X'</span>, <span class="st">'  X'</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'lr'</span>, <span class="dv">3</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">2</span>], </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>         <span class="st">'    X'</span>, <span class="st">'X X X'</span>,  <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'lr'</span>, <span class="dv">4</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X  '</span>, <span class="st">'X  '</span>, <span class="st">'X X'</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'ll'</span>, <span class="dv">1</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], ARRAY [<span class="dv">1</span>,<span class="dv">2</span>], </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X X'</span>, <span class="st">'    X'</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'ll'</span>, <span class="dv">2</span>, ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>], </span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>         <span class="st">'  X'</span>, <span class="st">'  X'</span>, <span class="st">'X X'</span>, <span class="st">'   '</span>),</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'ll'</span>, <span class="dv">3</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="dv">0</span>,<span class="dv">1</span>], ARRAY [<span class="dv">0</span>,<span class="dv">2</span>], </span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X    '</span>, <span class="st">'X X X'</span>, <span class="st">'     '</span>, <span class="st">'     '</span>),</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'ll'</span>, <span class="dv">4</span>, ARRAY [<span class="dv">0</span>,<span class="dv">0</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>], ARRAY [<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>], ARRAY [<span class="dv">1</span>,<span class="dv">0</span>], </span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>         <span class="st">'X X'</span>, <span class="st">'X  '</span>, <span class="st">'X  '</span>, <span class="st">'   '</span>)<span class="op">;</span>   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Each row in the table describes a specific piece (given by the <code>name</code> column) in a specific orientation (given by the <code>orient</code> column), with information about the relative positions of the four blocks (columns <code>b1</code>, <code>b2</code>, <code>b3</code>. and <code>b4</code>) and the text strings needed to properly illustrate the pieces (columns <code>prev1</code>, <code>prev2</code>, <code>prev3</code>, and <code>prev4</code>, to be discussed more later). The block positions are each provided as a two-element integer array, with the first integer giving its relative height and the second giving its relative width. These values are taken relative to the block assigned <code>[0, 0]</code>, which is always in the leftmost position (although at varying heights). Because of the way the board is configured, a smaller height value actually indicates a piece that is further up the playfield (i.e.&nbsp;closer to the top from the perspective of the player), with pieces appearing initially at a height of 1 and then falling into place at some larger value (maximum of 20).</p>
+</section>
+<section id="starting-a-game" class="level2">
+<h2 class="anchored" data-anchor-id="starting-a-game">Starting a game</h2>
+<p>To start a new game of Tetris, the move list and line counts must be reset, and all pieces from the previous game must be cleared from the playfield. This is done using the <code>reset</code> procedure (<code>CALL reset();</code>), which is defined below:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE PROCEDURE reset()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>LANGUAGE plpgsql</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        col_index INT<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        row_index INT<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        TRUNCATE TABLE moves<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        TRUNCATE TABLE board<span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        TRUNCATE TABLE lines<span class="op">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        INSERT INTO lines(num_lines, num_cleared) </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            VALUES (<span class="dv">1</span>, <span class="dv">0</span>), (<span class="dv">2</span>, <span class="dv">0</span>), (<span class="dv">3</span>, <span class="dv">0</span>), (<span class="dv">4</span>, <span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        INSERT INTO board (height, width) </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            SELECT <span class="op">*</span> </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            FROM generate_series(<span class="dv">1</span>, <span class="dv">20</span>) t1 </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                CROSS JOIN generate_series(<span class="dv">1</span>, <span class="dv">10</span>) t2<span class="op">;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        PERFORM prepare_next()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        COMMIT<span class="op">;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The procedure begins by truncating the <code>moves</code>, <code>board</code>, and <code>lines</code> tables, and then inserting the appropriate starting values for the latter two tables. With tables now in a fresh state, a final function <code>prepare_next</code> is called which draws a random first piece and prepares the “graphical” interface for the player to use. The code for this function is given below:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION prepare_next()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    RETURNS VOID</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        piece_txt TEXT<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        PERFORM print_board()<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        PERFORM print_clears()<span class="op">;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">' '</span><span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        piece_txt <span class="op">=</span> get_piece()<span class="op">;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        PERFORM print_piece(piece_txt)<span class="op">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        UPDATE piece_log SET piece_name <span class="op">=</span> piece_txt<span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can see that <code>prepare_next</code> first calls a pair of functions that print the current state of the playfield (empty at this point) and the number of line clears (all zero). The code for these functions is given below:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION print_board()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    RETURNS VOID</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        row_itr RECORD<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        FOR row_itr IN </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            SELECT <span class="op">*</span> FROM readable</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        LOOP</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            RAISE NOTICE <span class="st">'| % | % | % | % | % | % | % | % | % | % |'</span>, </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                row_itr.c1, row_itr.c2, row_itr.c3, row_itr.c4, row_itr.c5,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                row_itr.c6, row_itr.c7, row_itr.c8, row_itr.c9, row_itr.c10<span class="op">;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        END LOOP<span class="op">;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'  1   2   3   4   5   6   7   8   9   10'</span><span class="op">;</span> </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION print_clears()</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    RETURNS VOID</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        lines INT[]<span class="op">;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        lines <span class="op">=</span> array(SELECT num_cleared FROM lines ORDER BY num_lines)<span class="op">;</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Single: %  Double: %  Triple: %  Tetris: %'</span>,</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>            lines[<span class="dv">1</span>], lines[<span class="dv">2</span>], lines[<span class="dv">3</span>], lines[<span class="dv">4</span>]<span class="op">;</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As can be seen, the graphical display is produced by raising notices with appropriately-formatted strings. Since the <code>board</code> table is not structured to be especially readable, we instead employ a view called <code>readable</code> that constructs a pivot table whose columns are the columns of the playfield:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>CREATE EXTENSION IF NOT EXISTS tablefunc<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE VIEW readable AS</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    SELECT <span class="op">*</span> FROM crosstab(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'SELECT height, width, CASE WHEN state THEN ''X'' ELSE '' '' END AS val </span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="er">            FROM board ORDER BY 1,2') </span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        AS t (height INT, c1 TEXT, c2 TEXT, c3 TEXT, c4 TEXT, c5 TEXT, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>              c6 TEXT, c7 TEXT, c8 TEXT, c9 TEXT, c10 TEXT)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Once the <code>board</code> table is repackaged in this more intuitive format, it can be easily displayed to the player by simply raising a notice for each row. Since the <code>crosstab</code> function is not available by default, we must import the <code>tablefunc</code> extension.</p>
+<p>Looking back at the second half of the <code>prepare_next</code> function, we can see that it next calls the <code>get_piece</code> function, which returns a random piece name that will serve as the next piece to be placed. The code for this function is given below:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION get_piece()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    RETURNS TEXT</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        piece TEXT<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        SELECT CASE</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            WHEN val BETWEEN <span class="dv">0</span> AND <span class="dv">1</span> THEN <span class="st">'sq'</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            WHEN val BETWEEN <span class="dv">1</span> AND <span class="dv">2</span> THEN <span class="st">'i'</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            WHEN val BETWEEN <span class="dv">2</span> AND <span class="dv">3</span> THEN <span class="st">'t'</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            WHEN val BETWEEN <span class="dv">3</span> AND <span class="dv">4</span> THEN <span class="st">'zl'</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            WHEN val BETWEEN <span class="dv">4</span> AND <span class="dv">5</span> THEN <span class="st">'zr'</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            WHEN val BETWEEN <span class="dv">5</span> AND <span class="dv">6</span> THEN <span class="st">'ll'</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            ELSE <span class="st">'lr'</span> END</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        INTO piece</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        FROM (VALUES (random() <span class="op">*</span> <span class="dv">7</span>)) AS t (val)<span class="op">;</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        RETURN piece<span class="op">;</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>While a bit verbose, this function operates in a simple manner by first sampling a random number uniformly between 0 and 7, and then returning a piece name based on which two integers it lies most tightly between. Once the piece has been selected, <code>prepare_next</code> stores its name in the <code>piece_log</code> table (which is the table’s only purpose) and then displays its shape to the player by calling the <code>print_piece</code> function. The code for this function is given below:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION print_piece(piece_name TEXT)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    RETURNS VOID</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        piece_text1 RECORD<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        piece_text2 RECORD<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        piece_text3 RECORD<span class="op">;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        piece_text4 RECORD<span class="op">;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        SELECT prev1, prev2, prev3, prev4 INTO piece_text1 FROM pieces </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            WHERE name <span class="op">=</span> piece_name AND orient <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        SELECT prev1, prev2, prev3, prev4 INTO piece_text2 FROM pieces </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>            WHERE name <span class="op">=</span> piece_name AND orient <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        SELECT prev1, prev2, prev3, prev4 INTO piece_text3 FROM pieces </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>            WHERE name <span class="op">=</span> piece_name AND orient <span class="op">=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        SELECT prev1, prev2, prev3, prev4 INTO piece_text4 FROM pieces </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>            WHERE name <span class="op">=</span> piece_name AND orient <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'Next piece:  %  |  %  |  %  |  %'</span>, </span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            piece_text1.prev1, </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text2.prev1, <span class="st">''</span>), </span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text3.prev1, <span class="st">''</span>), </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text4.prev1, <span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'             %  |  %  |  %  |  %'</span>,</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>            piece_text1.prev2, </span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text2.prev2, <span class="st">''</span>), </span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text3.prev2, <span class="st">''</span>), </span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text4.prev2, <span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'             %  |  %  |  %  |  %'</span>,</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>            piece_text1.prev3, </span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text2.prev3, <span class="st">''</span>), </span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text3.prev3, <span class="st">''</span>), </span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text4.prev3, <span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>        RAISE NOTICE <span class="st">'             %  |  %  |  %  |  %'</span>,</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>            piece_text1.prev4, </span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text2.prev4, <span class="st">''</span>), </span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text3.prev4, <span class="st">''</span>), </span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>            COALESCE(piece_text4.prev4, <span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>While the function is fairly long, it is really just repeating the same basic step. First, the <code>prev1</code>, <code>prev2</code>, <code>prev3</code>, and <code>prev4</code> strings for the desired piece are retrieved from the <code>pieces</code> table at a given orientation. The “prev” + <em>n</em> naming scheme simply indicates that the string serves as the <em>n</em>th row in the display graphic. Once this information has been retrieved for all orientations, the piece illustrations can be printed to the player. For pieces which don’t have all orientations, any NULL values are replaced with an empty string before printing.</p>
+</section>
+<section id="placing-a-piece" class="level2">
+<h2 class="anchored" data-anchor-id="placing-a-piece">Placing a piece</h2>
+<p>Once a new game has been started, the player can place a piece by performing an insertion into the <code>moves</code> table. This can be done manually using <code>INSERT INTO moves (pos, orient) VALUES (int1, int2);</code>, or more conveniently by calling the <code>place</code> stored procedure with arguments <code>int1</code> and <code>int2</code>, i.e.&nbsp;<code>CALL place(int1, int2);</code>, which executes the same insertion statement. The value of <code>int1</code>, which must be between 1 and 10, denotes the leftmost column that the piece will occupy. The value of <code>int2</code> specifies which orientation to place the piece. This value must be greater than zero but no larger than the maximum number of orientations for the piece, which can be determined by simply looking at the number of different illustrations that are displayed. Once the orientation and horizontal position have been chosen, the piece will be dropped vertically onto the stack of previous pieces.</p>
+<p>Internally, the process described above is carried out using a trigger on the <code>moves</code> table that is called before each row insertion. This trigger executes the <code>place_piece</code> function, which is given below:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION place_piece()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    RETURNS TRIGGER</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        pos_block BOOL<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        row_itr INT<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        row0 Int<span class="op">;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        col0 INT<span class="op">;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        collision BOOL<span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        piece RECORD<span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        SELECT <span class="op">*</span> INTO piece FROM pieces WHERE orient <span class="op">=</span> NEW.orient AND </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>            pieces.name <span class="op">=</span> (SELECT piece_log.piece_name FROM piece_log)<span class="op">;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        IF piece IS NULL THEN</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>            PERFORM print_board()<span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            RAISE NOTICE <span class="st">'Piece does not have orientation %.'</span>, NEW.orient<span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>            PERFORM print_piece((SELECT piece_log.piece_name FROM piece_log))<span class="op">;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>            RETURN NULL<span class="op">;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        END IF<span class="op">;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        col0 <span class="op">=</span> NEW.pos<span class="op">;</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        FOR row_itr IN <span class="fl">1..21</span> LOOP</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>            collision <span class="op">=</span> check_piece_collision(row_itr, col0, piece.b1, piece.b2, </span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                                              piece.b3, piece.b4)<span class="op">;</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            row0 <span class="op">=</span> row_itr <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>            EXIT WHEN collision<span class="op">;</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        END LOOP<span class="op">;</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        IF row0 <span class="op">=</span> <span class="dv">0</span> THEN</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>            PERFORM print_board()<span class="op">;</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>            RAISE NOTICE <span class="st">'Piece cannot be placed.'</span><span class="op">;</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>            PERFORM print_piece(piece.name)<span class="op">;</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>            RETURN NULL<span class="op">;</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        ELSE</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>            PERFORM add_piece(row0, col0, piece.b1, piece.b2, piece.b3, piece.b4)<span class="op">;</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>            PERFORM clear_lines()<span class="op">;</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>        END IF<span class="op">;</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>        PERFORM prepare_next()<span class="op">;</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        RETURN NEW<span class="op">;</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE TRIGGER piece_placed BEFORE INSERT ON moves FOR EACH ROW</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>    EXECUTE PROCEDURE place()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The function begins by retrieving the necessary piece of information and checking that the orientation requested by the player is valid. Next, it loops through the playfield rows starting from the top, and checks if the piece will collide with the existing piece stack at the given height. This collision checking is done using the <code>check_piece_collision</code> and <code>check_block_collision</code> functions, which are given below:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION check_piece_collision(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    row0 INT, col0 INT, b1 INT[], b2 INT[], b3 INT[], b4 INT[])</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    RETURNS BOOL</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        row1 INT<span class="op">;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        col1 INT<span class="op">;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        collision BOOL <span class="op">=</span> <span class="st">'false'</span><span class="op">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        collision <span class="op">=</span> collision OR check_block_collision(row0 <span class="op">+</span> b1[<span class="dv">1</span>], col0 <span class="op">+</span> b1[<span class="dv">2</span>])<span class="op">;</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        collision <span class="op">=</span> collision OR check_block_collision(row0 <span class="op">+</span> b2[<span class="dv">1</span>], col0 <span class="op">+</span> b2[<span class="dv">2</span>])<span class="op">;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        collision <span class="op">=</span> collision OR check_block_collision(row0 <span class="op">+</span> b3[<span class="dv">1</span>], col0 <span class="op">+</span> b3[<span class="dv">2</span>])<span class="op">;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        collision <span class="op">=</span> collision OR check_block_collision(row0 <span class="op">+</span> b4[<span class="dv">1</span>], col0 <span class="op">+</span> b4[<span class="dv">2</span>])<span class="op">;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        RETURN collision<span class="op">;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION check_block_collision(row0 INT, col0 INT)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    RETURNS BOOL</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        collision BOOL <span class="op">=</span> <span class="st">'true'</span><span class="op">;</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        IF (col0 BETWEEN <span class="dv">1</span> AND <span class="dv">10</span>) AND row0 <span class="op">&lt;=</span> <span class="dv">20</span> THEN</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>            IF row0 <span class="op">&gt;</span> <span class="dv">0</span> THEN</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>                SELECT state INTO collision </span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>                FROM board WHERE height <span class="op">=</span> row0 AND width <span class="op">=</span> col0<span class="op">;</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>            ELSE</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>                collision <span class="op">=</span> <span class="st">'false'</span><span class="op">;</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>            END IF<span class="op">;</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>        END IF<span class="op">;</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>        RETURN collision<span class="op">;</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The first function to be called is <code>check_piece_collision</code>, which takes as arguments the row and column of the playfield to be checked and the relative block positions of the piece that were retrieved from <code>pieces</code>. It computes the absolute positions of the four piece blocks by adding the specified row and column to the first and second elements respectively of each integer array. The rows and columns for these positions are then passed to <code>check_block_collision</code>, which determines whether the specified block is in-bounds and not currently occupied by another piece.</p>
+<p>Going back to the loop in function <code>place</code>, we can see that it terminates once <code>check_block_collision</code> indicates that a collision is detected at the specified height. After subtracting one from this height to get the largest <em>non-colliding</em> height, the function then calls <code>add_piece</code>, which is defined below:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION add_piece(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    row0 INT, col0 INT, b1 INT[], b2 INT[], b3 INT[], b4 INT[])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    RETURNS VOID</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        UPDATE board SET state <span class="op">=</span> <span class="st">'true'</span> WHERE </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            (height <span class="op">=</span> row0 <span class="op">+</span> b1[<span class="dv">1</span>] AND width <span class="op">=</span> col0 <span class="op">+</span> b1[<span class="dv">2</span>]) OR</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            (height <span class="op">=</span> row0 <span class="op">+</span> b2[<span class="dv">1</span>] AND width <span class="op">=</span> col0 <span class="op">+</span> b2[<span class="dv">2</span>]) OR</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            (height <span class="op">=</span> row0 <span class="op">+</span> b3[<span class="dv">1</span>] AND width <span class="op">=</span> col0 <span class="op">+</span> b3[<span class="dv">2</span>]) OR</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            (height <span class="op">=</span> row0 <span class="op">+</span> b4[<span class="dv">1</span>] AND width <span class="op">=</span> col0 <span class="op">+</span> b4[<span class="dv">2</span>])<span class="op">;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This function simply updates the values in <code>board</code> which correspond to the final position of the piece. Once the state of those tiles is changed to <code>true</code>, the <code>place</code> function clears any filled lines by calling the <code>clear_lines</code> function, which is given below:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>CREATE OR REPLACE FUNCTION clear_lines()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    RETURNS VOID</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    LANGUAGE plpgsql</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>AS $$</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    DECLARE</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        row_itr INT<span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        filled BOOL<span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        cleared_count INT <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    BEGIN</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        FOR row_itr IN </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>            SELECT height FROM board GROUP BY height HAVING BOOL_AND(state) ORDER BY height</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        LOOP</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>            DELETE FROM board WHERE height <span class="op">=</span> row_itr<span class="op">;</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>            UPDATE board SET height <span class="op">=</span> height <span class="op">+</span> <span class="dv">1</span> WHERE height <span class="op">&lt;</span> row_itr<span class="op">;</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>            cleared_count <span class="op">=</span> cleared_count <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        END LOOP<span class="op">;</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        INSERT INTO board(height, width) </span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>            SELECT <span class="op">*</span> FROM generate_series(<span class="dv">1</span>, cleared_count) t1 CROSS JOIN generate_series(<span class="dv">1</span>, <span class="dv">10</span>) t2<span class="op">;</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        UPDATE lines SET num_cleared <span class="op">=</span> num_cleared <span class="op">+</span> <span class="dv">1</span> WHERE num_lines <span class="op">=</span> cleared_count<span class="op">;</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    END<span class="op">;</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>$$<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When clearing a line, the blocks in the target line must be deleted, and all lines that are above it in the playfield must be dropped down by one row. This rearrangement can be carried out for any number of simultaneous line clears by starting from the top of the playfield (i.e.&nbsp;at a height of 1) and iterating down the rows. When a row is determined to be full, it is deleted from <code>board</code> and all rows above it have their heights incremented by 1. By repeating this for heights 1 through 20, all line clears can be correctly implemented in a single pass. Finally, <code>clear_lines</code> updates the <code>lines</code> table based on how many lines were cleared, ranging from 0 (in which case there is no update) to 4.</p>
+<p>After performing any line clears, the <code>place</code> function finishes by calling <code>prepare_next</code>, which prints the updated playfield and selects the next piece for the player. This process repeats for each new piece until no valid moves remain, at which point the player must call <code>reset</code> to begin a new game (this can be used to end a game at any point).</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

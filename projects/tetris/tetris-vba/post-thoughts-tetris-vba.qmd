@@ -1,0 +1,46 @@
+---
+title: "Post: Some Thoughts on VBA Tetris"
+date: 9/16/2023
+toc: true
+fig-align: center
+format: html
+---
+
+## Why VBA?
+
+I would wager, boldly, that Visual Basic for Applications (VBA) is not the go-to language for game development. It is, however, widely used for scripting and automation within the Microsoft Office ecosystem, especially Excel. This is where I was first exposed to VBA, writing custom physics functions for processing and analyzing experimental data. I suspect that it is mostly institutional inertia that keeps the language going, chugging along as a kind of living fossil[^1] that is just too inconvenient to replace. And hey, if it's not broken, why fix it?
+
+[^1]: "Fossil" is probably a bit unfair, since Visual Basic was created in 1991 and is thus no older than Python.
+
+On a personal level, I rather enjoy the look and feel of VBA. It is one of the tidiest languages that I've used, with every keyword nicely capitalized and no ugly bracket/parentheses nesting. My biggest gripe is how functions often *cannot* be called using parentheses. The lack of visual separation between the function name and the arguments can make invocations difficult to parse, especially if the passed variables are also capitalized:
+
+
+```python
+
+'Valid'
+SomeFunction, SomeVariable, SomeOtherVariable
+
+'Syntax Error'
+SomeFunction(SomeVariable, SomeOtherVariable)
+
+```
+
+I would really like to know Microsoft's reasoning for this design choice, but I have yet to locate a good source[^2]. That aside, the rest of the language feels pretty natural, and I haven't found it significantly harder to code with than something like JavaScript or Python. My positive(ish) sentiment toward VBA does not seem to be shared by many others though, as it was apparently voted the [least-loved, least-wanted, and most-dreaded](https://insights.stackoverflow.com/survey/2020#most-loved-dreaded-and-wanted) language on StackOverflow.
+
+[^2]: [This StackOverflow answer](https://stackoverflow.com/a/15519085) does a good job explaining the "what" of the rules, but not really the "why".
+
+## Why Tetris?
+
+In any case, I wanted to expand my understanding of VBA by using it to do something unnatural. This is often a fun way to practice new technical skills, since it pushes you away from the project-on-rails experience that is typical of many online tutorials. I have been a Tetris fan since 2017, and from then on I've enjoyed finding excuses to implement the game in increasingly ridiculous contexts[^3]. Microsoft Excel was never *meant* to serve as a game engine, but it *can* serve as one in a rudimentary fashion using VBA, and that's pretty cool. 
+
+[^3]: [PostgreSQL](/projects/tetris/tetris-sql/tetris-sql.qmd) is probably still the winner there, but really the sky's the limit.
+
+## Improvements?
+
+The Tetris that I implemented here is a highly simplified and pared-down version of the real game. The most glaring omission is that there is no "game loop", and thus the game will proceed at whatever pace the user wishes. As any Tetris player knows, this is *not* how the game usually works[^4]. The lack of a game loop means that it is difficult to implement a reasonable gravity system that continuously pulls pieces downward, and thus my version just teleports pieces down to the bottom. While this simplifies the code, it eliminates important aspects of the game, such as tucking a new piece underneath an existing piece to fill in gaps. 
+
+[^4]: [This](https://www.youtube.com/watch?v=5Jm2Lc5CBYw) should provide some sense of how fast a real game can go.
+
+I do not see any technical reason why a timed game loop couldn't be implemented using VBA. All you would really need is a means of tracking time increments on the order of 10-20 milliseconds[^5], and then processing a set of instructions at each increment. While I haven't looked too closely at the speed or optimization of VBA code, it seems like it ought to be fast enough to process and render the game at lower drop speeds at least.
+
+[^5]: NES Tetris, a very popular version of Tetris, runs at ~60 frames per second.

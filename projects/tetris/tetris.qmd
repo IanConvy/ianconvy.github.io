@@ -1,0 +1,21 @@
+---
+title: Tetris
+fig-align: center
+format: html
+---
+
+My interest in Tetris started around 2017, after I watched the 2016 CTWC [finals match](https://www.youtube.com/watch?v=DdfRQjb5o9k) between Jeff Moore and the late Jonas Neubauer. This match had, for some reason, gone viral relative to previous Tetris matches on YouTube, and led to increased interest in competitive play. Although I never got good enough at the game to compete at these kinds of events (and top-level play has improved tremendously in recent years), I have found Tetris to be a bountiful playground for experimenting with cool technologies.
+
+The projects in this section all involve Tetris in some significant way. Several of them are implementations of Tetris in both usual and unusual settings, while others involve analyzing the game's properties. A list of the projects, along with brief descriptions, is given below:
+
+[PostgreTETRIS: Tetris in SQL](/projects/tetris/tetris-sql/tetris-sql.qmd)
+: This project implements a simplified version of Tetris in a PostgreSQL database. The player performs a table insertion to specify their move, and then a set of PL/pgSQL procedures are triggered to process the game logic. The game can be "installed" by running the SQL script hosted on GitHub.
+
+[Tetris in VBA](/projects/tetris/tetris-vba/tetris-vba.qmd)
+: This project implements a simplified version of Tetris within a Microsoft Excel spreadsheet using Visual Basic for Applications (VBA). The player is given a simple graphical interface with which to position and drop pieces, which triggers a set of VBA routines behind the scenes. The game can be played by downloading the spreadsheet hosted on GitHub.
+
+[“Solving” Tetris with Apache Spark](/projects/tetris/tetris-spark/tetris-spark.qmd)
+: This project "solves" a portion of Tetris by computing optimal stacking patterns using Apache Spark (specifically PySpark). The solution specifies how to place pieces without creating holes in the stack. Example code can be run from the associated Jupyter notebook on GitHub.
+
+[Tetris Emulation with OpenGL](/projects/tetris/tetris-emulator/tetris-emulator.qmd)
+: This project uses OpenGL to emulate the version of Tetris released in 1989 on the Nintendo Entertainment System. The program is written from scratch in C++, and recreates all of the subtle design patterns that are unique to this version of the game. It can be easily compiled to run on a Linux device by following the GitHub instructions.

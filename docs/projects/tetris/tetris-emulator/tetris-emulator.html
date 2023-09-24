@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2019-05-22">
+
+<title>Ian Convy’s Stuff - Tetris Emulation with OpenGL</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/quarto-contrib/bootstrap-icons-1.9.1/all.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Ian Convy’s Stuff</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../projects/phd/phd.html" rel="" target="" aria-current="page">
+ <span class="menu-text">PhD Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/tetris/tetris.html" rel="" target="">
+ <span class="menu-text">Tetris</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/other/other.html" rel="" target="">
+ <span class="menu-text">Other</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/IanConvy" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/ian-convy" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../projects/tetris/tetris.html">Tetris</a></li><li class="breadcrumb-item"><a href="../../../projects/tetris/tetris-emulator/tetris-emulator.html">NES Emulator</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/phd/phd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PhD Research</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/decomp/deomp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Interaction Decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/bayesian/bayesian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayesian Error Correction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/mi-scaling/mi-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Correlation Scaling in Images</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-sql/tetris-sql.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PostgreTETRIS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris-vba/tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris in VBA</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-vba/post-thoughts-tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Post: Some Thoughts on VBA Tetris</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-spark/tetris-spark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solving Tetris with Spark</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-emulator/tetris-emulator.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">NES Emulator</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/other/other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Other</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/neoquest/neoquest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Decoding NeoQuest II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/wavelet/wavelet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wavelet Reconstructor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/speedrunning/speedrunning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speedrunning Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#general-structure-and-game-loop" id="toc-general-structure-and-game-loop" class="nav-link" data-scroll-target="#general-structure-and-game-loop">General Structure and Game Loop</a></li>
+  <li><a href="#running-a-frame" id="toc-running-a-frame" class="nav-link" data-scroll-target="#running-a-frame">Running a Frame</a></li>
+  <li><a href="#displaying-the-game" id="toc-displaying-the-game" class="nav-link" data-scroll-target="#displaying-the-game">Displaying the Game</a></li>
+  <li><a href="#handling-inputs" id="toc-handling-inputs" class="nav-link" data-scroll-target="#handling-inputs">Handling Inputs</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Tetris Emulation with OpenGL</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 22, 2019</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><i class="bi-github " style="" role="img" aria-hidden="true"></i> <a href="https://github.com/IanConvy/Tetris">GitHub Repository</a></p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This project seeks to emulate the <a href="https://en.wikipedia.org/wiki/Tetris_(NES_video_game)">version of Tetris</a> played on the Nintendo Entertainment System (NES). Released in 1989, NES Tetris was one of the first mass-market editions of the game, and helped to greatly expand its popularity. While a more standardized set of rules now exists for modern Tetris releases, earlier versions were given a large amount of freedom in how they implemented many aspects of the game, from overall piece speed and drop mechanics to the randomization and scoring algorithms. My goal here is to recreate all of these details in an application that can run on a desktop computer.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/tetris/tetris-emulator/preview.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screenshot of the emulator in action.</figcaption>
+</figure>
+</div>
+<p>The program can be compiled on Linux (tested specifically on Ubuntu 18.04) by following the instructions on the project’s GitHub page. The only external dependency is <a href="https://www.glfw.org/">GLFW</a>, an open-source library that interfaces with OpenGL and handles user inputs. The following sections provide a broad outline of the emulator’s underlying code, which is written in C++ and uses OpenGL to render graphics. The source code itself is also heavily commented, and comprehensively explains the emulator’s finer details.</p>
+</section>
+<section id="general-structure-and-game-loop" class="level2">
+<h2 class="anchored" data-anchor-id="general-structure-and-game-loop">General Structure and Game Loop</h2>
+<p>The emulator’s source files (in the <code>src</code> directory) are broadly divided into code that runs the game logic (in the <code>game</code> subdirectory) and code that generates the game’s graphics (in the <code>graphics</code> subdirectory). The third subdirectory <code>glad</code> contains a single file <code>glad.c</code> that was generated using the <a href="https://github.com/Dav1dde/glad">glad</a> OpenGL loading library, and is used to find the correct OpenGL functions at runtime.</p>
+<p>The emulator is initialized by the <code>main</code> function in <code>main.cpp</code>, which performs the following setup operations:</p>
+<ol type="1">
+<li>Create the game window and its associated OpenGL context.</li>
+<li>Parse user-provided information about the game mode, starting level, and asset directory.</li>
+<li>Initialize handlers for user inputs and graphics rendering.</li>
+<li>Create a new game object and connects it to the handlers.</li>
+</ol>
+<p>The code for these three steps is given below (the handlers will be discussed in more detail later):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">//</span> <span class="fl">1.</span> Create the game window <span class="kw">and</span> assign to it an OpenGL context loaded by GLEW</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">int</span> windowHeight <span class="op">=</span> <span class="dv">899</span>, windowWidth <span class="op">=</span> <span class="dv">1035</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>GLFWwindow<span class="op">*</span> window <span class="op">=</span> glfwCreateWindow(windowWidth, windowHeight, <span class="st">"Tetris"</span>, nullptr, nullptr)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>glfwMakeContextCurrent(window)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>gladLoadGL()<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">//</span> <span class="fl">2.</span> Extract image<span class="op">/</span>shader parent directory, game <span class="bu">type</span>, <span class="kw">and</span> level <span class="im">from</span> command line</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>const std::string drawingLocation <span class="op">=</span> argv[<span class="dv">1</span>]<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>const std::string mode <span class="op">=</span> (argc <span class="op">&gt;</span> <span class="dv">2</span>) ? argv[<span class="dv">2</span>] : std::string(<span class="st">"nes"</span>)<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>const <span class="bu">int</span> startLevel <span class="op">=</span> (argc <span class="op">&gt;</span> <span class="dv">3</span>) ? std::stoi(argv[<span class="dv">3</span>]) : <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="op">//</span> <span class="fl">3.</span> Create the keyboard<span class="op">/</span>mouse <span class="bu">input</span> handler <span class="kw">and</span> the OpenGL drawer</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>InputHandler inputs{window}<span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>BoardDrawer drawer{drawingLocation}</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="op">//</span> <span class="fl">4.</span> Create game <span class="bu">object</span> <span class="kw">and</span> assign variables to graphics handler</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>NESTetris game{startLevel}<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>game.assignInput(inputs)<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>drawer.assignGrid(game.displayGrid)<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>drawer.assignLevel(game.dynamic[<span class="st">"level"</span>])<span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>drawer.assignLineCount(game.board.lineCount)<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>drawer.assignlineTypeCount(game.board.lineTypeCount)<span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>drawer.assignNextPiece(game.nextPiece)<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>drawer.assignScore(game.dynamic[<span class="st">"score"</span>])<span class="op">;;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>After completing these initialization steps, the <code>main</code> function then begins to execute the game loop, which processes each frame. The loop is divided into two stages, one which handles the game logic and another that handles graphics:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>double engTime <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>double rendTime <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>const double engSecs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="fl">60.1</span><span class="op">;</span> <span class="op">//</span> Recipricol of FPS</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>const double rendSecs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="fl">60.1</span><span class="op">;</span> <span class="op">//</span> Recipricol of FPS</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">//</span> Run the main game loop, <span class="cf">with</span> game frames run <span class="kw">and</span> drawn seperately</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (<span class="op">!</span>glfwWindowShouldClose(window)) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    double newTime <span class="op">=</span> glfwGetTime()<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (newTime <span class="op">-</span> engTime <span class="op">&gt;=</span> engSecs) {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        game.runFrame()<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        engTime <span class="op">=</span> newTime<span class="op">;</span>  </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (newTime <span class="op">-</span> rendTime <span class="op">&gt;=</span> rendSecs) {</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        drawer.drawFrame()<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        glfwSwapBuffers(window)<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        rendTime <span class="op">=</span> newTime<span class="op">;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    glfwPollEvents()<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The three key functions in the loop are <code>game.runFrame</code>, <code>drawer.drawFrame</code>, and <code>glfwPollEvents</code>. The first two function calls have many effects that will be examined in subsequent sections, but <code>glfwPollEvents</code> simply processes GLFW events that are in the queue, such as user inputs. This function is executed as frequently as possible to minimize input lag, while the <code>game.runFrame</code> and <code>drawer.drawFrame</code> functions are called with specific frequencies based on the desired frame and refresh rates.</p>
+</section>
+<section id="running-a-frame" class="level2">
+<h2 class="anchored" data-anchor-id="running-a-frame">Running a Frame</h2>
+<p>The NES console runs at 60.1 frames per second (FPS), which means that the game logic is executed approximately once every 17 milliseconds. In the emulator, each frame is marked by a call to <code>game.runFrame</code>, which is a method of the master <code>game</code> object that holds all methods, attributes, and sub-objects related to gameplay. The <code>game.runFrame</code> method is itself a fairly simple function, tasked with deciding how the frame should be processed:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>void NESTetris::runFrame()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    setCommands()<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (commands[<span class="st">"reset"</span>]) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        resetGame()<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (flags[<span class="st">"frozen"</span>] <span class="op">==</span> true) {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        runFrozenFrame()<span class="op">;</span> <span class="op">//</span> Run during the entry delay</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="op">!</span>filledRows.empty()) {</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            runClearFrame()<span class="op">;</span> <span class="op">//</span> Run during line clears</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            runActiveFrame()<span class="op">;</span> <span class="op">//</span> Run during regular play</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    resetBool(commands)<span class="op">;</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">++</span> dynamic[<span class="st">"totalFrames"</span>]<span class="op">;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The “frozen” and “clear” frames are both fairly similar in that they halt play when executed, which slows down the game and offers some respite for the player. An “active” frame is the type of frame that is run during normal gameplay, and consists of the following operations:</p>
+<ol type="1">
+<li>Process commands from the input handler.</li>
+<li>Apply gravity to the current piece.</li>
+<li>Check if the piece has landed and if any rows have been filled.</li>
+</ol>
+<p>The first operation is done via the <code>setCommands</code> function, which takes key presses logged by the input handler and translates them into game actions. A portion of the <code>setCommands</code> is reproduced below, focusing on horizontal movement of the current Tetris piece:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>    <span class="op">//</span> Left key:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (keyMap[<span class="st">"left"</span>] <span class="op">==</span> <span class="st">"pressed"</span> <span class="op">&amp;&amp;</span> keyMap[<span class="st">"right"</span>] <span class="op">==</span> <span class="st">"off"</span>) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        commands[<span class="st">"doLeft"</span>] <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (keyMap[<span class="st">"left"</span>] <span class="op">==</span> <span class="st">"held"</span>) {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        commands[<span class="st">"leftDAS"</span>] <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        }  </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">//</span> Right key:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (keyMap[<span class="st">"right"</span>] <span class="op">==</span> <span class="st">"pressed"</span> <span class="op">&amp;&amp;</span> keyMap[<span class="st">"left"</span>] <span class="op">==</span> <span class="st">"off"</span>) {</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        commands[<span class="st">"doRight"</span>] <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (keyMap[<span class="st">"right"</span>] <span class="op">==</span> <span class="st">"held"</span>) {</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        commands[<span class="st">"rightDAS"</span>] <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As can be seen from the <code>if</code> statements, the mapping between a key press and a command can vary based on the present and past state of other keys. Once the commands are processed, the emulator then checks to see if the piece needs to be shifted downward by gravity. The following code excerpt shows the logic which implements this process:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>flags[<span class="st">"dropDelay"</span>] <span class="op">&amp;&amp;</span> dynamic[<span class="st">"dropFrames"</span>] <span class="op">&gt;=</span> dynamic[<span class="st">"gravity"</span>]) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        dynamic[<span class="st">"dropFrames"</span>] <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        currPiece<span class="op">-&gt;</span>translate(<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    }    </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">++</span> dynamic[<span class="st">"dropFrames"</span>]<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        displayPiece()<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The emulator counts the number of frames that have occurred since gravity was last applied, and compares this to the target rate (which depends on the game level). If the specified number of frames have elapsed, then the piece coordinates are all translated one unit downward. Otherwise, the frame counter is incremented and will be checked again on the next active frame.</p>
+<p>As its final step, an active frame will check whether the current piece has collided with an existing piece and/or the bottom of the playfield. This is done by querying the game’s <code>grid</code> object (which stores the location of all existing pieces) using the coordinates of the current piece. If a collision is detected, then the last downward shift is reversed and the emulator checks whether any rows are filled. This is all handled in the following code block:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (board.grid.collisionCheck(currPiece<span class="op">-&gt;</span>coords)) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">++</span> dynamic[<span class="st">"move"</span>]<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    currPiece<span class="op">-&gt;</span>translate(<span class="dv">1</span>, <span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    setEntryDelay()<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    displayPiece()<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    filledRows <span class="op">=</span> displayGrid.getFilledRows()<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    board.placePiece(<span class="op">*</span>currPiece)<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>filledRows.empty()) {</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        updateScore()<span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        checkLevel()<span class="op">;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    }    </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>{</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        flags[<span class="st">"frozen"</span>] <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If at least one row has been filled, then those blocks will be cleared in subsequent frames. If not, a set of “frozen” frames will be run in order to delay the arrival of a new piece and give the player time to reorient themselves.</p>
+</section>
+<section id="displaying-the-game" class="level2">
+<h2 class="anchored" data-anchor-id="displaying-the-game">Displaying the Game</h2>
+<p>The graphical portion of the emulator is handled by the <code>drawer</code> object, whose <code>drawFrame</code> method is called in the game loop during each rendering cycle. This function performs the following tasks:</p>
+<ol type="1">
+<li>Draw the pieces that have been placed in the playfield.</li>
+<li>Display a preview of the piece that will appear after the current one is placed.</li>
+<li>Write text that gives the total line count and the number of different line clears.</li>
+<li>Write text showing the score and current level.</li>
+</ol>
+<p>These operations prepare the new display configuration in a buffer, which is then applied to the emulator window by calling the <code>glfwSwapBuffers</code> function at the end of each rendering cycle.</p>
+<p>To draw the Tetris pieces, the emulator extracts the coordinates and color of each block from its underlying <code>grid</code> object and then draws them:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>void BoardDrawer::drawPieceBlocks() {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (auto<span class="op">&amp;</span> rowColIndex : gridSource<span class="op">-&gt;</span>getFilledBlocks()) {</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span> row <span class="op">=</span> rowColIndex[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span> col <span class="op">=</span> rowColIndex[<span class="dv">1</span>]<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span> index <span class="op">=</span> rowColIndex[<span class="dv">2</span>]<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span> texture <span class="op">=</span> blockTextures[pieceTexMap[index]]<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        const double x0 <span class="op">=</span> playFieldPos[<span class="dv">0</span>] <span class="op">+</span> col<span class="op">*</span>blockWidthSpacing<span class="op">;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        const double x1 <span class="op">=</span> playFieldPos[<span class="dv">0</span>] <span class="op">+</span> (col <span class="op">+</span> <span class="dv">1</span>)<span class="op">*</span>blockWidthSpacing<span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        const double y0 <span class="op">=</span> playFieldPos[<span class="dv">5</span>] <span class="op">-</span> row<span class="op">*</span>blockHeightSpacing<span class="op">;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        const double y1 <span class="op">=</span> playFieldPos[<span class="dv">5</span>] <span class="op">-</span> (row <span class="op">+</span> <span class="dv">1</span>)<span class="op">*</span>blockHeightSpacing<span class="op">;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        std::vector<span class="op">&lt;</span>double<span class="op">&gt;</span> vertices <span class="op">=</span> {</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        x0, y1,      <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        x1, y1,      <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        x0, y0,      <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        x1, y0,      <span class="dv">1</span>, <span class="dv">0</span>}<span class="op">;</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        drawSquare(vertices, texture)<span class="op">;</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>blockWidthSpacing</code> and <code>blockHeightSpacing</code> attributes of the <code>drawer</code> object are computed based on the size of the emulator window, and serve to transform the grid coordinates to pixel coordinates. These new coordinates are then passed to the <code>drawSquare</code> function, which ultimately sends them to an OpenGL shader for rendering. A similar process is used to generate the piece preview, except that those blocks are drawn in their own separate portion of the emulator window.</p>
+<p>For generating text, the emulator uses characters defined by a bitmap stored in the <code>assets</code> folder (which also holds textures for the piece blocks and playfield background). When the emulator needs to render a specific character, it looks up the corresponding pixel coordinates in the bitmap image file and then passes that segment to the shader. The most complicated part of this process is positioning each character in the target string, which is done by the following method:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>std::vector<span class="op">&lt;</span>std::vector<span class="op">&lt;</span>double<span class="op">&gt;&gt;</span> TextDrawer::getTextVertices(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    std::string text, double x0, double x1, double y0, double y1)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">//</span> Get horizontal <span class="kw">and</span> vertical spacing</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    double horiz_spacing <span class="op">=</span> (x1 <span class="op">-</span> x0) <span class="op">/</span> text.length()<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">//</span> <span class="dv">106</span><span class="op">/</span><span class="dv">94</span> <span class="kw">is</span> the aspect ratio of the font</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    double vert_spacing <span class="op">=</span> horiz_spacing<span class="op">*</span>(<span class="fl">94.0</span><span class="op">/</span><span class="fl">106.0</span>)<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">//</span> Text <span class="kw">is</span> vertically centered <span class="kw">in</span> the rectangle </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    double vert_offset <span class="op">=</span> (y1 <span class="op">-</span> y0 <span class="op">-</span> vert_spacing)<span class="op">;</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    double y0char <span class="op">=</span> y0 <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span>vert_offset<span class="op">;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    double y1char <span class="op">=</span> y1 <span class="op">-</span> <span class="fl">0.5</span><span class="op">*</span>vert_offset<span class="op">;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">//</span> Iterate through each character <span class="kw">and</span> generate the four vertices to use when drawing</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    double charCount <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    std::vector<span class="op">&lt;</span>std::vector<span class="op">&lt;</span>double<span class="op">&gt;&gt;</span> textVertices<span class="op">;</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (auto<span class="op">&amp;</span> c : text) {</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="op">//</span> The x<span class="op">-</span>coordinates of each character are generated <span class="im">from</span> the horizontal spacing</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        double x0Char <span class="op">=</span> x0 <span class="op">+</span> horiz_spacing<span class="op">*</span>charCount<span class="op">;</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        double x1Char <span class="op">=</span> x0Char <span class="op">+</span> horiz_spacing<span class="op">;</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">//</span> Get relative texture coordinate by dividing by total bitmap width</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        double x0Tex <span class="op">=</span> charTexCoords[c][<span class="dv">0</span>] <span class="op">/</span> <span class="fl">4066.0</span><span class="op">;</span> </span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        double x1Tex <span class="op">=</span> charTexCoords[c][<span class="dv">1</span>] <span class="op">/</span> <span class="fl">4066.0</span><span class="op">;</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        <span class="op">//</span> The text <span class="kw">is</span> drawn <span class="kw">in</span> a line, so the y<span class="op">-</span>coordinate <span class="kw">is</span> uniform across <span class="bu">all</span> characters</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        std::vector<span class="op">&lt;</span>double<span class="op">&gt;</span> charVertices{</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>            x0Char, y1char,  x0Tex, <span class="dv">0</span>,</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>            x1Char, y1char,  x1Tex, <span class="dv">0</span>,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>            x0Char, y0char,  x0Tex, <span class="dv">1</span>,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>            x1Char, y0char,  x1Tex, <span class="dv">1</span>}<span class="op">;</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        textVertices.push_back(charVertices)<span class="op">;</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        <span class="op">++</span>charCount<span class="op">;</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> textVertices<span class="op">;</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This function takes a string of text and a set of coordinates marking the four corners of a rectangle and determines the amount of space that can be allotted to each character. The basic approach is to divide the horizontal length by the number of characters to get the width-per-character, then multiply this spacing by the height/width ratio of the font to get the vertical spacing. The text is then iterated through and each character is assigned its position and texture coordinates.</p>
+<p>Using the <code>getTextVertices</code> method, the process for writing text is fairly consistent. First, a string is generated that contains the desired text. Then, this string and the coordinates describing its intended position are passed to <code>getTextVertices</code>, which returns the character-level coordinates. Finally, each of the characters is individually passed to the OpenGL shader via <code>drawSquare</code>. The following example shows the code used to generate text for the total number of lines cleared:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>void BoardDrawer::drawLineCount()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (lineCountSource) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span> x0 <span class="op">=</span> <span class="dv">408</span>, x1 <span class="op">=</span> <span class="dv">695</span><span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span> y0 <span class="op">=</span> <span class="dv">64</span>, y1 <span class="op">=</span> <span class="dv">95</span><span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        std::string lineCountRaw <span class="op">=</span> std::to_string(<span class="op">*</span>lineCountSource)<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        std::string lineCountStr <span class="op">=</span> std::string(<span class="st">"lines-"</span>) <span class="op">+</span> </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            (lineCountRaw.size() <span class="op">&lt;</span> <span class="dv">3</span> ? </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>                std::string(<span class="dv">3</span> <span class="op">-</span> lineCountRaw.size(), <span class="st">'0'</span>) <span class="op">+</span> lineCountRaw </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                : lineCountRaw)<span class="op">;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        auto textVertices <span class="op">=</span> textDrawer.getTextVertices(lineCountStr, x0, x1, y0, y1)<span class="op">;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (auto<span class="op">&amp;</span> charVertices : textVertices) {</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>            drawSquare(charVertices, fontTexture)<span class="op">;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The desired string, which always has the form “Line-XXX”, is constructed using a pointer to the <code>game</code> object’s line count variable. The output coordinates are based on the layout of the playfield, and therefore do not change.</p>
+</section>
+<section id="handling-inputs" class="level2">
+<h2 class="anchored" data-anchor-id="handling-inputs">Handling Inputs</h2>
+<p>In order for someone to actually play a game of Tetris using the emulator, it must have a way of detecting user inputs. This is provided by the <code>InputHandler</code> object, which interfaces with the GLFW library to detect specific events like a mouse click or key press. The handler first converts the GLFW event variable into a string which describes the source of the input event, and then determines whether the event was newly-triggered or instead “held” (i.e.&nbsp;had already been triggered in the previous event poll). This logic is all handled in the <code>getStates</code> method of the <code>InputHandler</code> class:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>std::<span class="bu">map</span><span class="op">&lt;</span>const std::string, std::string<span class="op">&gt;</span> InputHandler::getStates(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    std::vector<span class="op">&lt;</span>std::string<span class="op">&gt;</span> keyNames) </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    std::<span class="bu">map</span><span class="op">&lt;</span>const std::string, std::string<span class="op">&gt;</span> states<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (auto keyName : keyNames) {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        auto keyIntItr <span class="op">=</span> keyToInt.find(keyName)<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        std::string state<span class="op">;</span> </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (keyIntItr <span class="op">!=</span> keyToInt.end()) { <span class="op">//</span> Only proceed <span class="cf">if</span> key name <span class="kw">is</span> valid</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            <span class="bu">int</span> key <span class="op">=</span> keyIntItr<span class="op">-&gt;</span>second<span class="op">;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (actionMap[key] <span class="op">==</span> GLFW_RELEASE) {</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                prevQueried[key] <span class="op">=</span> false<span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                state <span class="op">=</span> <span class="st">"off"</span><span class="op">;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> <span class="cf">if</span> (actionMap[key] <span class="op">!=</span> GLFW_RELEASE) { <span class="op">//</span> <span class="va">True</span> <span class="cf">for</span> GLFW_PRESS <span class="op">/</span> GLFW_REPEAT</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (<span class="op">!</span>prevQueried[key]) {</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                    prevQueried[key] <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                    state <span class="op">=</span> <span class="st">"pressed"</span><span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span> <span class="cf">if</span> (prevQueried[key]) {</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                    state <span class="op">=</span> <span class="st">"held"</span><span class="op">;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> { <span class="op">//</span> If no matching key <span class="kw">is</span> found, <span class="cf">return</span> empty string to indicate failure</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            state <span class="op">=</span>  <span class="st">""</span><span class="op">;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        states[keyName] <span class="op">=</span> state<span class="op">;</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> states<span class="op">;</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This function returns the state of the desired keys, which is “off” if the key is not pressed, “pressed” if the key has just been pressed, or “held” if the key is held down. In order to make this feedback instantaneous, the input handler records whether it has been previously queried about a particular key while that key is being pressed (i.e.&nbsp;while GLFW has registered a press but not yet a release). If the key had previously been queried, the function returns the state “held” rather than “pressed”. After the event states have been resolved, they can be used to configure commands that will be executed when a frame is processed.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

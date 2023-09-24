@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-08-11">
+
+<title>Ian Convy’s Stuff - Interaction Decomposition for Tensor Network Machine Learning</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/quarto-contrib/bootstrap-icons-1.9.1/all.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Ian Convy’s Stuff</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../projects/phd/phd.html" rel="" target="" aria-current="page">
+ <span class="menu-text">PhD Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/tetris/tetris.html" rel="" target="">
+ <span class="menu-text">Tetris</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/other/other.html" rel="" target="">
+ <span class="menu-text">Other</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/IanConvy" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/ian-convy" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../projects/phd/phd.html">PhD Research</a></li><li class="breadcrumb-item"><a href="../../../projects/phd/decomp/deomp.html">Interaction Decomposition</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/phd/phd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PhD Research</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/decomp/deomp.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Interaction Decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/bayesian/bayesian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayesian Error Correction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/mi-scaling/mi-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Correlation Scaling in Images</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-sql/tetris-sql.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PostgreTETRIS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris-vba/tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris in VBA</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-vba/post-thoughts-tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Post: Some Thoughts on VBA Tetris</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-spark/tetris-spark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solving Tetris with Spark</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-emulator/tetris-emulator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NES Emulator</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/other/other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Other</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/neoquest/neoquest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Decoding NeoQuest II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/wavelet/wavelet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wavelet Reconstructor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/speedrunning/speedrunning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speedrunning Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#a-brief-introduction-to-tensor-network-machine-learning" id="toc-a-brief-introduction-to-tensor-network-machine-learning" class="nav-link" data-scroll-target="#a-brief-introduction-to-tensor-network-machine-learning">A Brief Introduction to Tensor Network Machine Learning</a>
+  <ul class="collapse">
+  <li><a href="#an-example-tensor-network-model" id="toc-an-example-tensor-network-model" class="nav-link" data-scroll-target="#an-example-tensor-network-model">An example tensor network model</a></li>
+  </ul></li>
+  <li><a href="#the-interaction-decomposition" id="toc-the-interaction-decomposition" class="nav-link" data-scroll-target="#the-interaction-decomposition">The Interaction Decomposition</a></li>
+  <li><a href="#numerical-experiments" id="toc-numerical-experiments" class="nav-link" data-scroll-target="#numerical-experiments">Numerical Experiments</a>
+  <ul class="collapse">
+  <li><a href="#cnn-baseline" id="toc-cnn-baseline" class="nav-link" data-scroll-target="#cnn-baseline">CNN baseline</a></li>
+  <li><a href="#mps-and-ttn-models" id="toc-mps-and-ttn-models" class="nav-link" data-scroll-target="#mps-and-ttn-models">MPS and TTN models</a></li>
+  <li><a href="#interaction-constrained-models" id="toc-interaction-constrained-models" class="nav-link" data-scroll-target="#interaction-constrained-models">Interaction-constrained models</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Interaction Decomposition for Tensor Network Machine Learning</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 11, 2022</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><i class="bi-github " style="" role="img" aria-hidden="true"></i> <a href="https://github.com/IanConvy/interaction-decomposition">GitHub Repository</a></p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This research project introduced a novel approach to decomposing the contractions in a tensor network, and used it to analyze supervised tensor network machine learning algorithms. This work culminated in the publication <a href="https://iopscience.iop.org/article/10.1088/2632-2153/aca271">“Interaction Decompositions for Tensor Network Regression”</a>, whose abstract is given below:</p>
+<blockquote class="blockquote">
+<p>It is well known that tensor network regression models operate on an exponentially large feature space, but questions remain as to how effectively they are able to utilize this space. Using a polynomial featurization, we propose the interaction decomposition as a tool that can assess the relative importance of different regressors as a function of their polynomial degree. We apply this decomposition to tensor ring and tree tensor network models trained on the MNIST and Fashion MNIST datasets, and find that up to 75% of interaction degrees are contributing meaningfully to these models. We also introduce a new type of tensor network model that is explicitly trained on only a small subset of interaction degrees, and find that these models are able to match or even outperform the full models using only a fraction of the exponential feature space. This suggests that standard tensor network models utilize their polynomial regressors in an inefficient manner, with the lower degree terms being vastly under-utilized.</p>
+</blockquote>
+<p>The <code>examples.ipynb</code> notebook in the GitHub repo (linked above) provides a general overview of the paper’s methodology, along with sample code for some simple examples, while the remaining source code can be found in the <code>src</code> directory. A non-interactive version of the Jupyter notebook is reproduced below.</p>
+</section>
+<section id="a-brief-introduction-to-tensor-network-machine-learning" class="level2">
+<h2 class="anchored" data-anchor-id="a-brief-introduction-to-tensor-network-machine-learning">A Brief Introduction to Tensor Network Machine Learning</h2>
+<p>Tensor network machine learning is a fairly new area of ML research, in which a model is constructed out of a network of parameterized tensors. A <em>tensor</em> is best understood as a multidimensional array of numbers, which generalizes the matrix and vector objects from linear algebra. The number of dimensions in a tensor is referred to as its <em>order</em>, such that a vector is a first-order (1D) tensor and a matrix is a second-order (2D) tensor. Machine learning models can be built by joining multiple tensors together in a graph or network, with each edge of the graph denoting the multiplication of the tensors on the connected nodes.</p>
+<p>While a detailed description of tensor network machine learning is beyond the scope of this notebook, the basic pipeline can be summarized in the following steps:</p>
+<ol type="1">
+<li>Implicitly transform the feature vectors of the target dataset into elements of an exponentially large space</li>
+<li>Multiply these transformed samples by the tensors in the network which parameterize the model</li>
+<li>Optimize the elements of those tensors using the output of the tensor multiplication</li>
+<li>Repeat steps 1-3 until the loss function converges.</li>
+</ol>
+<p>In practice, we can implement these steps easily using the Keras API in TensorFlow (or another ML package) with custom layers for steps 1 and 2.</p>
+<section id="an-example-tensor-network-model" class="level3">
+<h3 class="anchored" data-anchor-id="an-example-tensor-network-model">An example tensor network model</h3>
+<p>In the following code block, we can see a custom Keras layer that implements the first step in our procedure:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Pow_Feat_Layer(tf.keras.layers.Layer):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, max_power, dtype <span class="op">=</span> <span class="st">"float32"</span>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(dtype <span class="op">=</span> dtype)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.powers <span class="op">=</span> tf.<span class="bu">range</span>(max_power <span class="op">+</span> <span class="dv">1</span>, dtype <span class="op">=</span> dtype)[<span class="va">None</span>, <span class="va">None</span>]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> inputs[..., <span class="va">None</span>] <span class="op">**</span> <span class="va">self</span>.powers</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> output   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This class inherits from the Keras <code>Layer</code> class, and operates by expanding the <span class="math inline">\(n \times m\)</span> batch of feature vectors into an <span class="math inline">\(n\times m \times p + 1\)</span> batch of feature matrices. For a given sample matrix, the <span class="math inline">\(i\)</span>th row has the form <span class="math inline">\([1, x_i, x^2_i,...,x^p_i]\)</span>, where <span class="math inline">\(x_i\)</span> is the <span class="math inline">\(i\)</span>th data feature and <span class="math inline">\(p\)</span> is the maximum power. Implicitly, we view the sample matrix as representing a tensor formed from the tensor product of each row, which would be an element of a massive <span class="math inline">\(p^m\)</span>-dimensional tensor space.</p>
+<p>For step 2, can implement another custom Keras layer that carries out the tensor multiplication of our network with the output from <code>Pow_Feat_Layer</code>. The following code block provides an example of such a layer:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MPS_Layer(tf.keras.layers.Layer):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, bond_dim, num_classes, dtype <span class="op">=</span> <span class="st">"float32"</span>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(dtype <span class="op">=</span> dtype)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.bond_dim <span class="op">=</span> bond_dim</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.num_classes <span class="op">=</span> num_classes</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.set_decomp(<span class="va">False</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> build(<span class="va">self</span>, input_shape):</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        (_, num_sites, phy_dim) <span class="op">=</span> input_shape[:<span class="dv">3</span>]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.num_sites <span class="op">=</span> num_sites</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.split <span class="op">=</span> tf.Variable(num_sites <span class="op">//</span> <span class="dv">2</span>, trainable <span class="op">=</span> <span class="va">False</span>) <span class="co"># The output is placed in the middle</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.matrix_weights <span class="op">=</span> <span class="va">self</span>.add_weight(<span class="st">"matrix_weights"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            [phy_dim, num_sites, <span class="va">self</span>.bond_dim, <span class="va">self</span>.bond_dim], <span class="va">self</span>.dtype, <span class="va">self</span>.initializer)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.middle <span class="op">=</span> <span class="va">self</span>.add_weight(<span class="st">"middle"</span>, <span class="co"># This tensor is the output component of the network</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            [<span class="va">self</span>.num_classes, <span class="va">self</span>.bond_dim, <span class="va">self</span>.bond_dim], <span class="va">self</span>.dtype, <span class="va">self</span>.middle_initializer)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs, <span class="op">**</span>kwargs):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This function generates a prediction on the passed input batch.</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        split_data <span class="op">=</span> tf.concat([inputs[:, <span class="va">self</span>.split:], inputs[:, :<span class="va">self</span>.split]], <span class="dv">1</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        matrices <span class="op">=</span> tf.einsum(<span class="st">"nij,jikl-&gt;inkl"</span>, split_data, <span class="va">self</span>.matrix_weights)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        matrix_prod <span class="op">=</span> <span class="va">self</span>.reduction(matrices)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> tf.einsum(<span class="st">"nkl,olk-&gt;no"</span>, matrix_prod, <span class="va">self</span>.middle)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> outputs</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">@staticmethod</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> initializer(shape, dtype):</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This function initializes the component tensors of the network.</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># The tensors need to be initialized such that they basically act </span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># like the identity.</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        (phys_dim, num_sites, bond_dim, bond_dim) <span class="op">=</span> shape</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        bias <span class="op">=</span> tf.tile(tf.eye(bond_dim, dtype <span class="op">=</span> dtype)[<span class="va">None</span>, <span class="va">None</span>], (<span class="dv">1</span>, num_sites, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>        kernel <span class="op">=</span> tf.random.normal([phys_dim <span class="op">-</span> <span class="dv">1</span>, num_sites, bond_dim, bond_dim], <span class="dv">0</span>, <span class="fl">1e-2</span>, dtype)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        weights <span class="op">=</span> tf.concat([bias, kernel], <span class="dv">0</span>)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> weights</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">@staticmethod</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> middle_initializer(shape, dtype):</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This function initializes the output component tensor.</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        (num_sites, bond_dim, bond_dim) <span class="op">=</span> shape</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        weights <span class="op">=</span> tf.tile([tf.eye(bond_dim, dtype <span class="op">=</span> dtype)], (num_sites, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        noised <span class="op">=</span> weights <span class="op">+</span> tf.random.normal(weights.shape, <span class="dv">0</span>, <span class="fl">1e-2</span>, dtype <span class="op">=</span> dtype)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> noised</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">@staticmethod</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> reduction(tensor):</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This function performs an efficient contraction of the MPS</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        <span class="co"># component matrices generated by contraction with the data</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># vectors.</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        size <span class="op">=</span> <span class="bu">int</span>(tensor.shape[<span class="dv">0</span>])</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> size <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>            half_size <span class="op">=</span> size <span class="op">//</span> <span class="dv">2</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>            nice_size <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> half_size</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>            leftover <span class="op">=</span> tensor[nice_size:]</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>            tensor <span class="op">=</span> tf.matmul(tensor[<span class="dv">0</span>:nice_size:<span class="dv">2</span>], tensor[<span class="dv">1</span>:nice_size:<span class="dv">2</span>])</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>            tensor <span class="op">=</span> tf.concat([tensor, leftover], axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>            size <span class="op">=</span> half_size <span class="op">+</span> <span class="bu">int</span>(size <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> tensor[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As before, this layer inherits from the Keras <code>Layer</code> base class, and overloads the <code>build</code> and <code>call</code> methods. The <code>self.matrix_weights</code> array holds the parameters of the tensor network model, with each slice along the first dimension corresponding to a third-order tensor on one of the graph nodes. There are many different kinds of tensor networks, with this layer implementing a matrix product state (MPS) architecture. Note that custom initialization functions are needed in order to generate a numerically-stable output, and that the tensor multiplication can be performed efficiently in parallel. Once an output is generated, the parameters in <code>self.matrix_weights</code> (and <code>self.middle</code>) can be optimized in step 3 using stochastic gradient descent as would be done for a neural network.</p>
+</section>
+</section>
+<section id="the-interaction-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="the-interaction-decomposition">The Interaction Decomposition</h2>
+<p>For a tensor network regression model using <code>Pow_Feat_layer</code> with <span class="math inline">\(p = 1\)</span> (which is most common), the prediction <span class="math inline">\(y\)</span> for sample vector <span class="math inline">\(\vec{x}\)</span> is given by</p>
+<p><span class="math display">\[\begin{equation}
+y = w_0 + \sum^m_{i=1}w_ix_i + \sum^{m-1}_{i=1}\sum^m_{j = i+1}w_{ij}x_ix_j + ... + w_{1,2,...,m}x_1x_2\cdots x_m,
+\end{equation}\]</span></p>
+<p>which is linear regression (with coefficients <span class="math inline">\(w\)</span> generated by the tensor multiplication) on every possible product of the original features. In an interaction decomposition, we explicitly separate out contributions to <span class="math inline">\(y\)</span> based on the number of features multiplied together in the regressors. This <em>interaction degree</em> ranges from 0 in the bias term <span class="math inline">\(w_0\)</span> to <span class="math inline">\(m\)</span> in the term <span class="math inline">\(w_{1,2,...,m}x_1x_2\cdots x_m\)</span> which is the product of all features. Once the different interactions are disentangled, we can analyze their properties and modify their values individually.</p>
+<p>It turns out that the interaction decomposition can be implemented in a fairly straightforward manner by tweaking how the tensor operations are performed. The following code block performs an interaction decomposition for the MPS model shown previously:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decomp(<span class="va">self</span>, inputs, indices, <span class="op">**</span>kwargs):</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    max_order <span class="op">=</span> indices[<span class="op">-</span><span class="dv">1</span>].shape[<span class="dv">0</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    split_data <span class="op">=</span> tf.concat([inputs[:, <span class="va">self</span>.split:], inputs[:, :<span class="va">self</span>.split]], <span class="dv">1</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    order_matrices <span class="op">=</span> tf.einsum(<span class="st">"nsrj,jskl-&gt;rnskl"</span>, split_data, <span class="va">self</span>.matrix_weights)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    cuml <span class="op">=</span> order_matrices[:, :, <span class="dv">0</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="va">self</span>.num_sites):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        order_matrix <span class="op">=</span> order_matrices[:, :, i]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        contract <span class="op">=</span> tf.einsum(<span class="st">"rnkl,qnlm-&gt;qrnkm"</span>, cuml, order_matrix)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        combined <span class="op">=</span> contract[<span class="dv">0</span>, <span class="dv">1</span>:] <span class="op">+</span> contract[<span class="dv">1</span>, :<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        cuml <span class="op">=</span> tf.concat([contract[<span class="dv">0</span>, :<span class="dv">1</span>], combined, contract[<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>:]], <span class="dv">0</span>)[:max_order]</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    order_output <span class="op">=</span> tf.einsum(<span class="st">"rnlm,oml-&gt;nor"</span>, cuml, <span class="va">self</span>.middle)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> order_output</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The key modification is that each tensor is given an extra dimension which separates the different interaction degrees. When two tensors are multiplied together, the slices along this extra dimension are matched up and summed together to preserve the interaction degree.</p>
+</section>
+<section id="numerical-experiments" class="level2">
+<h2 class="anchored" data-anchor-id="numerical-experiments">Numerical Experiments</h2>
+<p>We will now perform numerical tests using the interaction decomposition on two different tensor network models: the MPS introduced previously, and a binary tree network called a TTN. We will train these models to classify images from the MNIST and Fashion MNIST datasets, though we will shrink them down from <span class="math inline">\(28 \times 28\)</span> to <span class="math inline">\(8 \times 8\)</span> to speed up our computations. The following code retrieves and plots a pair of example images:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> skimage <span class="im">import</span> transform</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_example_image(fashion <span class="op">=</span> <span class="va">False</span>):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> fashion:</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        image <span class="op">=</span> tf.keras.datasets.fashion_mnist.load_data()[<span class="dv">0</span>][<span class="dv">0</span>][<span class="dv">1</span>]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        image <span class="op">=</span> tf.keras.datasets.mnist.load_data()[<span class="dv">0</span>][<span class="dv">0</span>][<span class="dv">1</span>]</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> image <span class="op">/</span> <span class="dv">255</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> image[<span class="dv">4</span>:<span class="dv">24</span>, <span class="dv">4</span>:<span class="dv">24</span>] <span class="co"># Remove black border before resizing</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> transform.resize(image, (<span class="dv">8</span>, <span class="dv">8</span>)) <span class="op">-</span> <span class="fl">0.5</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> image</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>mnist_image <span class="op">=</span> get_example_image()</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>fashion_image <span class="op">=</span> get_example_image(fashion <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>(fig, axes) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].imshow(mnist_image, cmap <span class="op">=</span> <span class="st">"gray"</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].imshow(fashion_image, cmap <span class="op">=</span> <span class="st">"gray"</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/phd/decomp/shrunk.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Code output: MNIST on left, Fashion MNIST on right.</figcaption>
+</figure>
+</div>
+<p>Note that both images are largely recognizable after being shrunk, though this can vary depending on the image for Fashion MNIST.</p>
+<section id="cnn-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="cnn-baseline">CNN baseline</h3>
+<p>To get a sense of how difficult these two transformed datasets are to classify, we can run an experiment using an Inception-based CNN classifier as a state-of-the-art comparison point. The following code imports the model architecture from <code>cnn.py</code> and then trains it for 50 epochs on either MNIST or Fashion MNIST as specified.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src <span class="im">import</span> data, cnn</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>fashion <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>data_function <span class="op">=</span> data.get_fashion_data <span class="cf">if</span> fashion <span class="cf">else</span> data.get_mnist_data</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>((x_train, y_train), (x_test, y_test)) <span class="op">=</span> data_function(border <span class="op">=</span> <span class="va">False</span>, size <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">8</span>))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>x_train <span class="op">=</span> tf.reshape(x_train, [<span class="op">-</span><span class="dv">1</span>, <span class="dv">8</span>, <span class="dv">8</span>])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>x_test <span class="op">=</span> tf.reshape(x_test, [<span class="op">-</span><span class="dv">1</span>, <span class="dv">8</span>, <span class="dv">8</span>])</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>x_train <span class="op">=</span> tf.tile(x_train[..., <span class="va">None</span>], (<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>x_test <span class="op">=</span> tf.tile(x_test[..., <span class="va">None</span>], (<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> cnn.build_inception(x_train)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">compile</span>(loss <span class="op">=</span> <span class="st">'categorical_crossentropy'</span>, </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                optimizer <span class="op">=</span> tf.keras.optimizers.Adamax(learning_rate <span class="op">=</span> <span class="fl">0.006</span>, beta_1 <span class="op">=</span> <span class="fl">0.49</span>, beta_2 <span class="op">=</span> <span class="fl">0.999</span>),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                metrics <span class="op">=</span> [<span class="st">'accuracy'</span>])</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>model.fit(x_train, y_train, <span class="dv">64</span>, <span class="dv">50</span>, validation_split <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">6</span>, verbose <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>score <span class="op">=</span> model.evaluate(x_test, y_test, verbose <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Test loss:'</span>, score[<span class="dv">0</span>])</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Test accuracy:'</span>, score[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>After training, we find accuracies of 99.2-99.3% on MNIST and accuracies of 86.4-86.8% on Fashion MNIST. This shows that the <span class="math inline">\(8 \times 8\)</span> Fashion MNIST images are significantly harder to classify than the full <span class="math inline">\(28 \times 28\)</span> images, while MNIST does not seem to have been affected much by the resizing.</p>
+</section>
+<section id="mps-and-ttn-models" class="level3">
+<h3 class="anchored" data-anchor-id="mps-and-ttn-models">MPS and TTN models</h3>
+<p>The next models that we will test are the regular MPS and TTN tensor network models. For this initial set of experiments, we will perform the tensor operations normally during training, and then carry out the interaction decomposition at the end on the test dataset. The following code imports the tensor network models from <code>models.py</code>, trains them, and then saves the results. There are four different training combinations that can be selected, using either an MPS or TTN model and either MNIST or Fashion MNIST for training.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src <span class="im">import</span> data, factor, models</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"ttn"</span> <span class="co"># either "mps" or "ttn"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> <span class="st">"fashion"</span> <span class="co"># either "mnist" or "fashion"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>save <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>((train_x, train_y), (test_x, test_y), num_classes) <span class="op">=</span> data.get_dataset(</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        dataset, size <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">8</span>), border <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> models.get_model(model_name, num_classes, dtype <span class="op">=</span> <span class="st">"float64"</span>, bond_dim <span class="op">=</span> <span class="dv">20</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">compile</span>(loss <span class="op">=</span> <span class="st">"mse"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> tf.keras.optimizers.RMSprop(<span class="fl">1e-3</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    metrics <span class="op">=</span> [<span class="st">'accuracy'</span>],</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    run_eagerly <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>model.fit(train_x, train_y,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    batch_size <span class="op">=</span> <span class="dv">128</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    epochs <span class="op">=</span> <span class="dv">100</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    verbose <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    validation_split <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">6</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>score <span class="op">=</span> model.evaluate(test_x, test_y, verbose <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Test loss:'</span>, score[<span class="dv">0</span>])</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Test accuracy:'</span>, score[<span class="dv">1</span>])</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> save:</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    save_path <span class="op">=</span> <span class="ss">f"src/saved/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>dataset<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    model_string <span class="op">=</span> <span class="ss">f"/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>num_classes<span class="sc">}</span><span class="ss">_20_float64"</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    model.save_weights(save_path <span class="op">+</span> model_string, save_format <span class="op">=</span> <span class="st">"tf"</span>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Computing interaction degrees..."</span>)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    factor.factorize(save_path, (test_x, test_y))</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Complete."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The contributions from the different interaction degrees for each test sample are saved in the <code>factor.npz</code> compressed NumPy archive. These results can be aggregated into a more interpretable form by the following two functions:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_labeled_order_acc(path):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.load(path <span class="op">+</span> <span class="st">"/factors.npz"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> np.argmax(data[<span class="st">"results"</span>], <span class="dv">1</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> np.argmax(data[<span class="st">"labels"</span>], <span class="op">-</span><span class="dv">1</span>)[:, <span class="va">None</span>]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    accs <span class="op">=</span> (pred <span class="op">==</span> labels).mean(<span class="dv">0</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tf.convert_to_tensor(accs)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_labeled_cuml_acc(path):</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.load(path <span class="op">+</span> <span class="st">"/factors.npz"</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> np.argmax(data[<span class="st">"labels"</span>], <span class="op">-</span><span class="dv">1</span>)[:, <span class="va">None</span>]</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    cum_factors <span class="op">=</span> np.cumsum(data[<span class="st">"results"</span>], <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> np.argmax(cum_factors, <span class="dv">1</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    accs <span class="op">=</span> (pred <span class="op">==</span> labels).mean(<span class="dv">0</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tf.convert_to_tensor(accs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>These functions compute two different kinds of accuracy values with respect to the interaction decomposition. To get the accuracy of the interaction degrees individually, we use <code>get_labeled_order_acc</code> to compare the argmax for the prediction with the true label for each degree. To get the accuracy of the sum of all interaction degrees less than or equal to a given value, we use <code>get_labeled_cuml_acc</code> which sums the different predictions before taking the argmax. When these accuracy values are averaged across ten different model instantiations, we get the following plot:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/phd/decomp/accs.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Plots of accuracys vs interaction degree.</figcaption>
+</figure>
+</div>
+<p>where “TR” stands for “tensor ring”, which is a more precise term for our MPS model. The solid lines mark the cumulative accuracy of the interaction degrees, while the scatter plot points mark the individual accuracies of each degree. These plots show that the cumulative accuracies require half or more of the interaction degrees before converging to the final accuracy value, while the individual accuracies all have very poor performances.</p>
+</section>
+<section id="interaction-constrained-models" class="level3">
+<h3 class="anchored" data-anchor-id="interaction-constrained-models">Interaction-constrained models</h3>
+<p>In this final section, we consider tensor network models which make predictions using only a subset of interaction degrees. In particular, we consider models which use only the <span class="math inline">\(j\)</span>th interaction degree (the <em>degree-j</em> models), or which use the cumulative sum of interaction degree contributions up to the <span class="math inline">\(j\)</span>th degree (the <em>cumulative-j</em> models). We can train these models in precisely the same manner as the full models in the previous section, using only a slightly modified code block:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src <span class="im">import</span> data, factor, models</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"ttn"</span> <span class="co"># either "mps" or "ttn"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> <span class="st">"mnist"</span> <span class="co"># either "mnist" or "fashion"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>save <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>((train_x, train_y), (test_x, test_y), num_classes) <span class="op">=</span> data.get_dataset(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        dataset, size <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">8</span>), border <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> models.get_model(model_name, num_classes, dtype <span class="op">=</span> <span class="st">"float64"</span>, bond_dim <span class="op">=</span> <span class="dv">20</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>max_order <span class="op">=</span> [<span class="dv">2</span>] <span class="co"># max_order = j gives a cumulative-j model, max_order = [j] gives a degree-j model</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>model.set_output(<span class="va">True</span>, <span class="va">True</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>model.set_order(max_order)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">compile</span>(loss <span class="op">=</span> <span class="st">"mse"</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> tf.keras.optimizers.RMSprop(<span class="fl">1e-3</span>),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    metrics <span class="op">=</span> [<span class="st">'accuracy'</span>],</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    run_eagerly <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>model.fit(train_x, train_y,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    batch_size <span class="op">=</span> <span class="dv">128</span>,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    epochs <span class="op">=</span> <span class="dv">100</span>,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    verbose <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    validation_split <span class="op">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">6</span>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>score <span class="op">=</span> model.evaluate(test_x, test_y, verbose <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Test loss:'</span>, score[<span class="dv">0</span>])</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Test accuracy:'</span>, score[<span class="dv">1</span>])</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> save:</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    decomp <span class="op">=</span> <span class="ss">f"cuml-</span><span class="sc">{</span>max_order<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> <span class="bu">isinstance</span>(max_order, <span class="bu">int</span>) <span class="cf">else</span> <span class="ss">f"deg-</span><span class="sc">{</span>max_order[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    save_path <span class="op">=</span> <span class="ss">f"src/saved/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>dataset<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>decomp<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    model_string <span class="op">=</span> <span class="ss">f"/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>num_classes<span class="sc">}</span><span class="ss">_20_float64"</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    model.save_weights(save_path <span class="op">+</span> model_string, save_format <span class="op">=</span> <span class="st">"tf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If we train models cumlative-1 through cumulative-10 and degree-1 through degree-10, we can create a plot of their average accuracies versus the interaction degree accuracies in the previous section:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/phd/decomp/trained.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Plots of accuracy for the interaction-constrained models.</figcaption>
+</figure>
+</div>
+<p>where the previously plotted results are shown in black. From this new set of plots, we can see that the interaction-constrained models are often as effective as the full models, despite containing far fewer regressors. This suggests that the full tensor network models are using their low-degree regressors in a highly inefficient manner, since the corresponding interaction degree accuracies plotted in black are much lower.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

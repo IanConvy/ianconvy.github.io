@@ -1,0 +1,17 @@
+---
+title: Miscellaneous Projects
+toc: true
+fig-align: center
+format: html
+---
+
+This section of the site holds projects which do not fall into an existing category, and for which there aren't yet enough similar projects to create a new category. A list of projects currently placed here is given below, although many of these are likely to be moved over time.
+
+[Reverse Engineering NeoQuest II](/projects/other/neoquest/neoquest.qmd)
+: This project documents my efforts to reverse engineer an online RPG game called NeoQuest II. The game logic is handled entirely on the server side, so its mechanics need to be extracted using statistical analysis of repeated playthroughs. I use Selenium to automate the gameplay and R to perform the data processing and visualization.
+
+[Dimensionality Reduction and Generative Modeling using Wavelets](/projects/other/wavelet/wavelet.qmd)
+: This project implements a neural network algorithm that deconstructs and reconstructs images using the wavelet decomposition. The algorithm can be used for dimensionality reduction, denoising, or generative machine learning. Example code can be run in the associated Jupyter notebook on GitHub.
+
+[State of Speedrunning: A Power BI Report](/projects/other/speedrunning/speedrunning.qmd)
+: This project contains a Power BI report that documents trends within the speedrunning community, which is a group of people who attempt to complete games as quickly as possible. The reports is built off of DAX formulas operating on data requested from the API of speedrun.com, which hosts most speedrunning records.

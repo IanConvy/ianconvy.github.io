@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-07-26">
+
+<title>Ian Convy’s Stuff - Tetris in VBA</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/quarto-contrib/bootstrap-icons-1.9.1/all.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Ian Convy’s Stuff</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../projects/phd/phd.html" rel="" target="" aria-current="page">
+ <span class="menu-text">PhD Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/tetris/tetris.html" rel="" target="">
+ <span class="menu-text">Tetris</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../projects/other/other.html" rel="" target="">
+ <span class="menu-text">Other</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/IanConvy" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text">GitHub</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/ian-convy" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text">LinkedIn</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../projects/tetris/tetris.html">Tetris</a></li><li class="breadcrumb-item"><a href="../../../projects/tetris/tetris-vba/tetris-vba.html">Tetris in VBA</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/phd/phd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PhD Research</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/decomp/deomp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Interaction Decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/bayesian/bayesian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayesian Error Correction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/phd/mi-scaling/mi-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Correlation Scaling in Images</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tetris</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-sql/tetris-sql.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PostgreTETRIS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/tetris/tetris-vba/tetris-vba.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Tetris in VBA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-vba/post-thoughts-tetris-vba.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Post: Some Thoughts on VBA Tetris</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-spark/tetris-spark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solving Tetris with Spark</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/tetris/tetris-emulator/tetris-emulator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NES Emulator</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../projects/other/other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Other</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/neoquest/neoquest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Decoding NeoQuest II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/wavelet/wavelet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wavelet Reconstructor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../projects/other/speedrunning/speedrunning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speedrunning Report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#worksheet-structure" id="toc-worksheet-structure" class="nav-link" data-scroll-target="#worksheet-structure">Worksheet Structure</a></li>
+  <li><a href="#starting-a-game" id="toc-starting-a-game" class="nav-link" data-scroll-target="#starting-a-game">Starting a Game</a></li>
+  <li><a href="#positioning-a-piece" id="toc-positioning-a-piece" class="nav-link" data-scroll-target="#positioning-a-piece">Positioning a Piece</a></li>
+  <li><a href="#dropping-a-piece" id="toc-dropping-a-piece" class="nav-link" data-scroll-target="#dropping-a-piece">Dropping a Piece</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Tetris in VBA</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 26, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><i class="bi-github " style="" role="img" aria-hidden="true"></i> <a href="https://github.com/IanConvy/vba-tetris">GitHub Repository</a></p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This project implements a simplified version of Tetris within a Microsoft Excel spreadsheet using <a href="https://en.wikipedia.org/wiki/Visual_Basic_for_Applications">Visual Basic for Applications (VBA)</a> Visual Basic for Applications (VBA). To view this application, you can either download and open the <code>Tetris.xlsm</code> file (with macros enabled), or import the VBA code from the <code>Tetris.bas</code> file. Both files can be found in the project’s <a href="https://github.com/IanConvy/vba-tetris">GitHub repository</a>. Note that the <code>scrollButtons_SpinDown</code> and <code>scrollButtons_SpinUp</code> macros must placed in the worksheet code module.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../..\assets/projects/tetris/tetris-vba/preview.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">A game of Tetris played within Excel, showing the simple graphical interface.</figcaption>
+</figure>
+</div>
+<p>To start a game, simply hit the “Reset” button to clear the board and generate a new piece. The orientation of the piece can be set by pressing “Rotate”, while its horizontal alignment can be shifted using the left-right arrow buttons. The “Drop” button allows the piece to fall vertically downward until it collides with either the bottom of the board or a previously-placed piece.</p>
+<p>The text below offers a comprehensive description of the program’s code. For a more informal discussion of the project, see the associated post(s).</p>
+</section>
+<section id="worksheet-structure" class="level2">
+<h2 class="anchored" data-anchor-id="worksheet-structure">Worksheet Structure</h2>
+<p>The <code>Tetris.xlsm</code> worksheet can be broadly divided into two relevant areas: the Tetris playfield on the left (columns A through L), and the user interface on the right (columns M through R). The playfield is itself further subdivided into a set of four named ranges, specifying the in-bounds area plus the left, right, and bottom walls. The interface area consists of four buttons and a table that holds the number of different line clears that have occurred throughout the game.</p>
+<p>The player controls the placement of each piece using the buttons provided in the interface. At the start of a game and after each piece drop, a new piece is positioned at the top of the game board. The horizontal alignment of the piece can be shifted by the player using the left-right arrow buttons, which are implemented using a horizontal ActiveX scroll button control. This widget triggers the following two macros, which are activated by pressing the left and right arrows respectively:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">'Moves piece to the left after button press'</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Private Sub scrollButtons_SpinDown()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    Application.ScreenUpdating <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ShiftPiece <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>End Sub</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">'Moves piece to the right after button press'</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Private Sub scrollButtons_SpinUp()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    Application.ScreenUpdating <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    ShiftPiece <span class="dv">1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The player can cycle through different piece orientations by clicking the “Rotate” button repeatedly, and then finally drop the piece by pressing the “Drop” button. The “Reset” button is used to start a new game by clearing the playfield and zeroing the line count table.</p>
+</section>
+<section id="starting-a-game" class="level2">
+<h2 class="anchored" data-anchor-id="starting-a-game">Starting a Game</h2>
+<p>Whenever the “Reset” button is pressed, it triggers the following macro:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Sub Reset()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    Application.ScreenUpdating <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    startHeight <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    CreatePieceDict</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    ClearRange Range(<span class="st">"board"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    Range(<span class="st">"lines"</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    NextPiece</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In order to prepare a new game of Tetris, the program must ensure that the following steps have been taken:</p>
+<ol type="1">
+<li>The seven different piece types have been properly represented.</li>
+<li>The playfield and line counts have been cleared.</li>
+<li>A new, randomly-selected piece is placed at the top of the playfield.</li>
+</ol>
+<p>The <code>Reset</code> procedure shown above accomplishes each of these tasks in turn by calling a respective subroutine. While this preparatory work is being undertaken, the screen update flag is set to false in order to improve performance and avoid visual artifacts.</p>
+<p>The most complicated procedure called by <code>Reset</code> is <code>CreatePieceDict</code>, which defines the seven “tetromino” pieces used in standard Tetris. A portion of the code for this procedure, used to generate the “T-piece”, is reproduced below:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Dim tCoords(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1</span>) As Long</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">1</span>: tCoords(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">1</span>: tCoords(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>: tCoords(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>: tCoords(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">0</span>: tCoords(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>: tCoords(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>tCoords(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">0</span>) <span class="op">=</span> <span class="dv">1</span>: tCoords(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1</span>) <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>Set Pieces <span class="op">=</span> CreateObject(<span class="st">"Scripting.Dictionary"</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>Pieces.Add <span class="st">"t"</span>, tCoords</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The piece descriptions, which consist of (x, y) coordinates for each of the four blocks, are stored in three-dimensional integer arrays with shape 4 x 4 x 2. The first dimension denotes the orientation of the piece (there are always four orientations given, even if some of them are identical), while the second dimension identifies the specific piece block. Given a specific orientation and block, the array reduces to a two-dimensional vector, which holds the desired (x, y) coordinates.</p>
+<p>Once the pieces are properly defined, a new piece can be selected and added to the top of the playfield by calling the <code>NextPiece</code> procedure:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Private Sub NextPiece()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    pieceLocation <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    pieceOrient <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    Select Case Rnd() <span class="op">*</span> <span class="dv">7</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        Case <span class="dv">0</span> To <span class="dv">1</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"sq"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        Case <span class="dv">1</span> To <span class="dv">2</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"i"</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        Case <span class="dv">2</span> To <span class="dv">3</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"t"</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        Case <span class="dv">3</span> To <span class="dv">4</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"zl"</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        Case <span class="dv">4</span> To <span class="dv">5</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"zr"</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        Case <span class="dv">5</span> To <span class="dv">6</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"ll"</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        Case Else</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>            pieceName <span class="op">=</span> <span class="st">"lr"</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    End Select</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, startHeight, pieceLocation, pieceOrient</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here, a new piece is first selected randomly using Excel’s built-in random number generator, and then mapped (arbitrarily) to the abbreviated name of a piece. That string is then passed to the <code>PlacePiece</code> procedure, along with the initial piece position and orientation, which displays the new piece on top of the playfield.</p>
+</section>
+<section id="positioning-a-piece" class="level2">
+<h2 class="anchored" data-anchor-id="positioning-a-piece">Positioning a Piece</h2>
+<p>After a new piece is placed on the board, the player is free to decide its orientation and horizontal position at their own pace. As <a href="#worksheet-structure">shown previously</a>, the left-right arrow buttons will ultimately call the <code>ShiftPiece</code> procedure with an argument of either -1 (move left) or +1 (move right). Pressing the “Rotate” button triggers the <code>RotatePiece</code> macro, which cycles through different piece orientations. The code for <code>ShiftPiece</code> and <code>RotatePiece</code> is given below:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">'Moves piece to the left or right at the top of the board'</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Sub ShiftPiece(direct As Long)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, startHeight, pieceLocation, pieceOrient, <span class="va">True</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    If Not PieceCollision(pieceName, startHeight, pieceLocation <span class="op">+</span> direct, pieceOrient) Then</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        pieceLocation <span class="op">=</span> pieceLocation <span class="op">+</span> direct</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    End If</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, startHeight, pieceLocation, pieceOrient</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>End Sub</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">'Rotates piece in place (roughly) at the top of the board'</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>Sub RotatePiece()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    Dim newOrient As Long</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    Application.ScreenUpdating <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, startHeight, pieceLocation, pieceOrient, <span class="va">True</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    If pieceOrient <span class="op">=</span> <span class="dv">3</span> Then</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        newOrient <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    Else</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        newOrient <span class="op">=</span> pieceOrient <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    End If</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    If Not PieceCollision(pieceName, startHeight, pieceLocation, newOrient) Then</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        pieceOrient <span class="op">=</span> newOrient</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    End If</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, startHeight, pieceLocation, pieceOrient</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Both procedures have the same logical structure. They begin by using the <code>PlacePiece</code> procedure to remove the current image of the piece (which is equivalent to “placing” a transparent piece in that same location), and then they perform the desired modification of the piece’s coordinates. After checking that the new coordinates do not collide with the boundaries of the playfield or with another piece, the procedure finishes by placing the repositioned piece back on the board.</p>
+<p>The code for the <code>PlacePiece</code> procedure, along with its two helper functions <code>AddBlocks</code> and <code>ClearRange</code>, is given below:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Private Sub PlacePiece(piece As String, x0 As Long, y0 As Long, orient As Long, _ </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                       Optional blank As Boolean <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    Dim coords As Variant</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    Dim block As Long, x As Long, y As Long</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    Dim cell As Range</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    If Pieces Is Nothing Then Reset</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> Pieces.Item(piece)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    For block <span class="op">=</span> <span class="dv">0</span> To <span class="dv">3</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x0 <span class="op">+</span> coords(orient, block, <span class="dv">0</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> y0 <span class="op">+</span> coords(orient, block, <span class="dv">1</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        If (x <span class="op">&gt;</span> <span class="dv">0</span>) And (y <span class="op">&gt;</span> <span class="dv">0</span>) Then</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            Set cell <span class="op">=</span> Range(<span class="st">"board"</span>)(x, y)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            If blank Then</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                ClearRange cell</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            Else</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                AddBlocks cell, piece</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            End If</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        End If</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    Next block</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>End Sub</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>Private Sub AddBlocks(cells As Range, piece As String)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    Dim color As Long</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    color <span class="op">=</span> PieceColors.Item(piece)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    cells.Interior.ColorIndex <span class="op">=</span> color</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    cells.Font.ColorIndex <span class="op">=</span> color</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    cells.Value <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    cells.BorderAround xlContinuous, xlThin, xlAutomatic</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>End Sub</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>Private Sub ClearRange(cells As Range)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    cells.Clear</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    cells.Interior.ColorIndex <span class="op">=</span> xlNone</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The core logic is contained in the for-loop, which iterates through the piece blocks and computes their coordinates on the playfield. It does this by taking the <em>relative</em> coordinates given in <code>CreatePieceDict</code> and adding them to the passed arguments <code>x0</code> and <code>y0</code>, which denote the desired <em>absolute</em> position of the upper-left-most piece block. When the optional boolean argument is set to false, the <code>AddBlocks</code> procedure is called to paint the piece block into the target cell. When the argument is set to true, the cell is cleared of all formatting.</p>
+<p>To determine if a candidate piece position leads to collisions, and therefore must be rejected, the <code>PieceCollision</code> and <code>CheckCollision</code> functions are used:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Private Function PieceCollision(piece As String, x0 As Long, y0 As Long, _ </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                                orient As Long) As Boolean</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    Dim coords As Variant</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    Dim block As Long, x As Long, y As Long</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    coords <span class="op">=</span> Pieces.Item(piece)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    PieceCollision <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    For block <span class="op">=</span> <span class="dv">0</span> To <span class="dv">3</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x0 <span class="op">+</span> coords(orient, block, <span class="dv">0</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> y0 <span class="op">+</span> coords(orient, block, <span class="dv">1</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        PieceCollision <span class="op">=</span> PieceCollision Or CheckCollision(x, y)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    Next block</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>End Function</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>Private Function CheckCollision(x0 As Long, y0 As Long) As Boolean</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">'Check left boundary collision'</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    CheckCollision <span class="op">=</span> Not (Intersect(Range(<span class="st">"board"</span>)(x0, y0), Range(<span class="st">"left"</span>)) Is Nothing)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">'Check right boundary collision'</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    CheckCollision <span class="op">=</span> CheckCollision Or Not _ </span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                        (Intersect(Range(<span class="st">"board"</span>)(x0, y0), Range(<span class="st">"right"</span>)) Is Nothing)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">'Check bottom boundary condition'</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    CheckCollision <span class="op">=</span> CheckCollision Or Not _</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                        (Intersect(Range(<span class="st">"board"</span>)(x0, y0), Range(<span class="st">"bottom"</span>)) Is Nothing)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">'Check piece collision'</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    CheckCollision <span class="op">=</span> CheckCollision Or (Range(<span class="st">"board"</span>)(x0, y0) <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>End Function</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>PieceCollision</code> iterates through the piece blocks and calls <code>CheckCollision</code> at each coordinate. The latter function checks to see if the block cell overlaps with any of the cells corresponding to the left, right, or bottom boundaries of the playfield, or if it overlaps with an already occupied cell on the board. If any of these intersections occur, <code>PieceCollision</code> will return true and the proposed piece position will be rejected.</p>
+</section>
+<section id="dropping-a-piece" class="level2">
+<h2 class="anchored" data-anchor-id="dropping-a-piece">Dropping a Piece</h2>
+<p>Once the player has positioned a piece to their satisfaction, they can drop it into place by pressing the “Drop” button. This triggers the <code>DropPiece</code> procedure, which determines how the piece should ultimately land in the playfield:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Sub DropPiece()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    Dim height As Long</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    Application.ScreenUpdating <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, startHeight, pieceLocation, pieceOrient, <span class="va">True</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    For height <span class="op">=</span> startHeight <span class="op">+</span> <span class="dv">1</span> To <span class="dv">24</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    If PieceCollision(pieceName, height, pieceLocation, pieceOrient) Then</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        height <span class="op">=</span> height <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        Exit For</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    End If</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    Next height</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    PlacePiece pieceName, height, pieceLocation, pieceOrient</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    ClearLines</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    NextPiece</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The procedure works by incrementally lowering the height of the piece and checking for collisions. When a collision is detected, either with another piece or at the bottom of the playfield, the procedure calls <code>PlacePiece</code> at the height just before the collision was detected.</p>
+<p>Once the piece is placed in its final position, the application must determine whether any rows of the playfield have been filled, and then update the playfield appropriately. This is done using the <code>ClearLines</code> and <code>UpdateScore</code> procedures:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Private Sub ClearLines()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    Dim height As Long</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    Dim board As Range: Set board <span class="op">=</span> Range(<span class="st">"board"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    Dim subrange As Range</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    Dim lineCount As Long: lineCount <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    For height <span class="op">=</span> <span class="dv">1</span> To <span class="dv">22</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        If WorksheetFunction.Sum(Range(board.cells(height, <span class="dv">1</span>), board.cells(height, <span class="dv">10</span>))) <span class="op">=</span> <span class="dv">10</span> Then</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            lineCount <span class="op">=</span> lineCount <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            Range(board.cells(<span class="dv">1</span>, <span class="dv">1</span>), board.cells(height <span class="op">-</span> <span class="dv">1</span>, <span class="dv">10</span>)).Copy</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            Range(board.cells(<span class="dv">2</span>, <span class="dv">1</span>), board.cells(height, <span class="dv">10</span>)).PasteSpecial xlPasteAll</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            Range(<span class="st">"A1"</span>).Select</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        End If</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    Next height</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    UpdateScore lineCount</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>End Sub</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>Private Sub UpdateScore(lineClears As Long)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    If lineClears <span class="op">&gt;</span> <span class="dv">0</span> Then</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        Range(<span class="st">"lines"</span>)(<span class="dv">1</span>, lineClears) <span class="op">=</span> Range(<span class="st">"lines"</span>)(<span class="dv">1</span>, lineClears) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    End If</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>End Sub</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>ClearLines</code> procedure exploits a hidden feature of the playfield, in which occupied cells are given a value of 1 using a font color identical to the background cell color. As a result, filled rows can be found by simply adding the values of all cells in each row and checking if the sum equals 10. When a row is found to be filled, it is removed by copying the portion of the playfield above the row and pasting it one row lower. The total number of lines cleared in a single call to <code>ClearLines</code> is used to update the table of line counts via the <code>UpdateScore</code> procedure.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

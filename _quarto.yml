@@ -1,0 +1,86 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Ian Convy's Stuff"
+  navbar:
+    left:
+      - 
+        href: index.qmd
+        text: Home
+      -
+        href: projects/phd/phd.qmd
+        text: PhD Research
+      -
+        href: projects/tetris/tetris.qmd
+        text: Tetris
+      - 
+        href: projects/other/other.qmd
+        text: Other
+
+    right:
+      -
+        icon: github
+        href: https://github.com/IanConvy
+        text: GitHub
+      -
+        icon: linkedin
+        href: https://www.linkedin.com/in/ian-convy
+        text: LinkedIn
+  sidebar:
+    contents:
+      -
+        section: PhD Research
+        href: projects/phd/phd.qmd
+        contents:
+          - 
+            text: Interaction Decomposition
+            href: projects/phd/decomp/deomp.qmd
+          -
+            text: Bayesian Error Correction
+            href: projects/phd/bayesian/bayesian.qmd
+          -
+            text: Correlation Scaling in Images
+            href: projects/phd/mi-scaling/mi-scaling.qmd
+      - 
+        section: Tetris
+        href: projects/tetris/tetris.qmd
+        contents:
+          -
+            text: PostgreTETRIS
+            href: projects/tetris/tetris-sql/tetris-sql.qmd
+          - 
+            section: Tetris in VBA
+            href: projects/tetris/tetris-vba/tetris-vba.qmd
+            contents: 
+              - projects/tetris/tetris-vba/post-thoughts-tetris-vba.qmd
+          -
+            text: Solving Tetris with Spark
+            href: projects/tetris/tetris-spark/tetris-spark.qmd
+          - 
+            text: NES Emulator
+            href: projects/tetris/tetris-emulator/tetris-emulator.qmd
+
+      -
+        section: Other
+        href: projects/other/other.qmd
+        contents:
+          -
+            text: Decoding NeoQuest II
+            href: projects/other/neoquest/neoquest.qmd
+          - 
+            text: Wavelet Reconstructor
+            href: projects/other/wavelet/wavelet.qmd
+          -
+            text: Speedrunning Report
+            href: projects/other/speedrunning/speedrunning.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+
+

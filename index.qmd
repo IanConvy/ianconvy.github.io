@@ -1,0 +1,41 @@
+---
+title: My Portfolio
+author: Ian Convy
+toc: true
+fig-align: center
+format: html
+---
+
+This website serves as a repository for my past and present projects. Each project has a webpage that provides a comprehensive description of its goals and methodology, and some also have informal blog-style posts about the work process and final product.
+
+At the moment, my projects are currently subdivided into [research work](/projects/phd/phd.qmd), [Tetris stuff](/projects/tetris/tetris.qmd), and a [miscellaneous section](/projects/other/other.qmd) (projects here will eventually be moved to a distinct section). A full listing of these projects, along with the main concepts and technologies used to implement them, is given below. Longer descriptions for each set of projects can be found on the corresponding category page, along with any blog posts about the subject more broadly.
+
+- [PhD Research](/projects/phd/phd.qmd):
+    - [Interaction Decomposition for Tensor Network Machine Learning](/projects/phd/decomp/deomp.qmd)
+        - Python, TensorFlow, tensor analysis
+    - [Bayesian Inference for Quantum Error Correction](/projects/phd/bayesian/bayesian.qmd)
+        - Python, PyTorch, Bayesian probability, quantum computing
+    - [Quantifying Mutual Information via Logistic Regression](/projects/phd/mi-scaling/mi-scaling.qmd)
+        - Python, machine learning, information theory
+
+---
+
+- [Tetris](/projects/tetris/tetris.qmd):
+    - [PostgreTETRIS: Tetris in SQL](/projects/tetris/tetris-sql/tetris-sql.qmd)
+        - PostgreSQL, PL/pgSQL, relational databases
+    - [Tetris in VBA](/projects/tetris/tetris-vba/tetris-vba.qmd)
+        - Microsoft Excel, Visual Basic For Applications (VBA)
+    - [“Solving” Tetris with Apache Spark](/projects/tetris/tetris-spark/tetris-spark.qmd)
+        - PySpark, distributed computing
+    - [Tetris Emulation with OpenGL](/projects/tetris/tetris-emulator/tetris-emulator.qmd)
+        - C++, OpenGL
+
+---
+
+- [Others](/projects/other/other.qmd):
+    - [Reverse Engineering NeoQuest II](/projects/other/neoquest/neoquest.qmd)
+        - Python, R, Selenium, BeautifulSoup
+    - [The State of Speedrunning](/projects/other/speedrunning/speedrunning.qmd)
+        - Power BI, DAX, M, data visualization
+    - [Dimensionality Reduction and Generative Modeling using Wavelets](/projects/other/wavelet/wavelet.qmd)
+        - Python, TensorFlow, wavelet analysis, generative machine learning

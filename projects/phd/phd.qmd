@@ -1,0 +1,35 @@
+---
+title: Research at UC Berkeley
+toc: true
+fig-align: center
+format: html
+---
+
+From 2018 to 2023, I worked as a graduate researcher while completing my PhD at the University of California, Berkeley. My research projects were overseen by [Professor K. Birgitta Whaley](https://chemistry.berkeley.edu/faculty/chem/whaley), who specializes in quantum technologies, and focused on the intersection of machine learning and quantum computing. In one direction, I used classical techniques from machine learning to improve the operations of quantum hardware, while in the other I investigated new machine learning algorithms that could be run on a quantum computer.
+
+During my time at UC Berkeley I published six peer-reviewed papers, four as the main author and two as a secondary author. A list of these papers is given below in reverse chronological order:
+
+1. Liao, H.; **Convy, I.**; Yang, Z.; Whaley, K. B. [Decohering Tensor Network Quantum Machine Learning Models](https://link.springer.com/article/10.1007/s42484-022-00095-9). Quantum Mach. Intell. 2023, 5 (1), 7.
+
+2. **Convy, I.**; Whaley, K. B. [Interaction Decompositions for Tensor Network Regression](https://iopscience.iop.org/article/10.1088/2632-2153/aca271/meta). Machine Learning: Science and Technology 2022, 3 (4), 045027.
+
+3. **Convy, I.**; Liao, H.; et al. [Machine Learning for Continuous Quantum Error Correction on Superconducting Qubits](https://iopscience.iop.org/article/10.1088/1367-2630/ac66f9/meta). New J. Phys. 2022, 24 (6), 063019.
+
+4. **Convy, I.**; Whaley, K. B. [A Logarithmic Bayesian Approach to Quantum Error Detection](https://quantum-journal.org/papers/q-2022-04-04-680/). Quantum 2022, 6, 680.
+
+5. **Convy, I.**; Huggins, W.; Liao, H.; Whaley, K. B. [Mutual Information Scaling for Tensor Network Machine Learning](https://iopscience.iop.org/article/10.1088/2632-2153/ac44a9/meta). Mach. Learn.: Sci. Technol. 2022, 3 (1), 015017.
+
+6. Liao, H.; **Convy, I.**; Huggins, W. J.; Whaley, K. B. [Robust in Practice: Adversarial Attacks on Quantum Machine Learning](https://arxiv.org/abs/2010.08544). Phys. Rev. A 2021, 103 (4), 042427.
+
+My dissertation *Interrogating the Tensor Network Regression Model*, which can be [read here](https://storage.googleapis.com/icpublicstuff/projects/phd/thesis.pdf), focused specifically on tensor network machine learning, and included an additional unpublished paper in Chapter 5 which analyzed the tensor rank of multilinear regression models.  
+
+For the four papers that I directly authored, I have created three code demos that showcase the main methods that were employed:
+
+[Interaction Decomposition for Tensor Network Machine Learning](/projects/phd/decomp/deomp.qmd)
+: This page describes the decomposition algorithm used in paper 2, and how it can be applied to tensor network machine learning algorithms. All of the paper's major beats are covered in the demo, which can be run from the associated Jupyter notebook on GitHub.
+
+[Bayesian Inference for Quantum Error Correction](/projects/phd/bayesian/bayesian.qmd)
+: This page offers an introduction to the Bayesian error correction algorithms used in papers 3 and 4, and gives example code for it in PyTorch. The code provides a basic implementation of the algorithm, and does not include some of the details that were included in the published works. The code can be run from the associated Jupyter notebook on GitHub.
+
+[Quantifying Mutual Information via Logistic Regression](/projects/phd/mi-scaling/mi-scaling.qmd)
+: This page describes the correlation analysis carried out in paper 5, including both the neural network algorithm and the Gaussian distributions used to test it. While the large Tiny Images dataset is too large to include, the algorithm can be run on MNIST using the associated Jupyter notebook on GitHub.
