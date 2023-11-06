@@ -39,3 +39,5 @@ At the moment, my projects are currently subdivided into [research work](/projec
         - Power BI, DAX, M, data visualization
     - [Dimensionality Reduction and Generative Modeling using Wavelets](/projects/other/wavelet/wavelet.qmd)
         - Python, TensorFlow, wavelet analysis, generative machine learning
+    - [Library of Juggling](/projects/other/libraryofjuggling/libraryofjuggling.qmd)
+        - HTML, CSS, Jekyll, web hosting
